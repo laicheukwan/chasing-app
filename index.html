@@ -1,0 +1,2986 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHASING · 追星空间</title>
+<style>
+/* ============ Design tokens ============ */
+:root{
+  --bg:#f7f8fc;
+  --surface:#ffffff;
+  --surface-soft:#f2f4f9;
+  --border:#e9ecf4;
+  --text:#1b1d28;
+  --text-2:#5d6379;
+  --text-3:#959bad;
+  --accent:#7b6ef0;
+  --accent-soft:#eeeaff;
+  --accent-2:#5fd0b4;
+  --lane:#f0effd;
+  --danger:#ef5a5a;
+  --warn:#f0a93b;
+  --radius-l:22px;
+  --radius-m:16px;
+  --radius-s:12px;
+  --shadow-s:0 1px 2px rgba(23,26,45,.05), 0 6px 18px rgba(23,26,45,.04);
+  --shadow-m:0 2px 4px rgba(23,26,45,.05), 0 16px 40px rgba(23,26,45,.08);
+  --sidebar-bg:#1b1c26;
+  --ease:cubic-bezier(.22,.8,.3,1);
+}
+[data-theme="dark"]{
+  --bg:#12131a;
+  --surface:#1a1c25;
+  --surface-soft:#22242f;
+  --border:#2b2e3c;
+  --text:#f0f1f6;
+  --text-2:#a9aec2;
+  --text-3:#767b90;
+  --accent:#9b8cff;
+  --accent-soft:#2a2740;
+  --danger:#ff7171;
+  --shadow-s:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+  --shadow-m:0 2px 4px rgba(0,0,0,.3), 0 16px 40px rgba(0,0,0,.35);
+  --sidebar-bg:#0e0f15;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;
+  transition:background-color .3s var(--ease), color .3s var(--ease);
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{text-decoration:none;color:inherit}
+input,select,textarea{font-family:inherit}
+::selection{background:var(--accent-soft)}
+
+/* ============ Shell ============ */
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:224px;flex-shrink:0;background:var(--sidebar-bg);color:#f2f3f8;
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 14px 26px;
+  display:flex;flex-direction:column;gap:26px;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:4px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.brand-mark{width:30px;height:30px;flex-shrink:0;color:#fff}
+.brand-name{font-size:19px;font-weight:800;letter-spacing:.5px;color:#fff}
+.brand-sub{font-size:10.5px;color:rgba(255,255,255,.42);letter-spacing:.3px;margin-top:1px}
+
+.nav-label{font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.34);padding:0 10px;margin-bottom:8px;font-weight:600}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;
+  font-size:13.5px;color:rgba(255,255,255,.68);transition:background .18s var(--ease),color .18s var(--ease);
+  text-align:left;width:100%;
+}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.12);color:#fff;font-weight:600}
+.nav-item svg{width:17px;height:17px;flex-shrink:0;opacity:.85}
+
+.bot-btn{
+  margin:4px 2px 0;padding:11px 13px;border-radius:14px;width:calc(100% - 4px);
+  background:linear-gradient(135deg,#7b6ef0,#a89bff);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 8px 20px rgba(123,110,240,.32);transition:transform .18s var(--ease),box-shadow .18s var(--ease);
+}
+.bot-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(123,110,240,.4)}
+.bot-btn svg{width:15px;height:15px}
+.bot-hint{font-size:10.5px;color:rgba(255,255,255,.38);text-align:center;margin-top:7px;letter-spacing:.02em}
+
+.star-list{display:flex;flex-direction:column;gap:1px}
+.star-row{
+  display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:11px;width:100%;
+  font-size:13px;color:rgba(255,255,255,.72);transition:background .16s var(--ease);
+}
+.star-row:hover{background:rgba(255,255,255,.06);color:#fff}
+.star-row.active{background:rgba(255,255,255,.1);color:#fff}
+.avatar{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:#fff;letter-spacing:.02em;
+}
+.avatar.lg{width:40px;height:40px;font-size:14px}
+
+/* ============ Main ============ */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  height:62px;flex-shrink:0;display:flex;align-items:center;gap:14px;padding:0 26px;
+  background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40;
+}
+.crumbs{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text-3);min-width:0}
+.crumbs b{color:var(--text);font-weight:600;font-size:13.5px;white-space:nowrap}
+.crumbs .sep{opacity:.45}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.top-ghost{
+  display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-2);
+  padding:8px 12px;border-radius:10px;transition:background .16s var(--ease);
+}
+.top-ghost:hover{background:var(--surface-soft)}
+.top-ghost svg{width:15px;height:15px}
+.icon-btn{
+  width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);transition:background .16s var(--ease);
+}
+.icon-btn:hover{background:var(--surface-soft)}
+.icon-btn svg{width:18px;height:18px}
+.btn-login{
+  padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:600;
+  color:var(--text);background:var(--surface);transition:all .16s var(--ease);
+}
+.btn-login:hover{border-color:var(--accent);color:var(--accent)}
+.menu-btn{display:none}
+
+.content{flex:1;padding:26px 26px 40px;max-width:1180px;width:100%}
+.page{display:none;animation:fadeUp .34s var(--ease) both}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ============ Hero ============ */
+.hero{
+  position:relative;overflow:hidden;border-radius:var(--radius-l);padding:34px 36px;
+  background:linear-gradient(105deg,#eceaff 0%,#f3f0ff 38%,#eafaf5 100%);
+  box-shadow:var(--shadow-s);margin-bottom:22px;
+}
+[data-theme="dark"] .hero{background:linear-gradient(105deg,#26233b 0%,#1f2330 55%,#1b2b2a 100%)}
+.hero:after{
+  content:"";position:absolute;right:-60px;top:-80px;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(160,148,255,.45),rgba(120,220,200,.12) 62%,transparent 70%);
+  filter:blur(4px);
+}
+.hero-inner{position:relative;z-index:1;max-width:560px}
+.hero:before{content:"";position:absolute;left:22%;bottom:-90px;width:300px;height:220px;background:radial-gradient(circle,rgba(123,110,240,.16),transparent 68%);filter:blur(10px)}
+.eyebrow{font-size:11px;letter-spacing:.22em;font-weight:700;color:var(--accent);opacity:.9}
+.hero h1{font-size:31px;line-height:1.32;font-weight:800;margin:12px 0 10px;letter-spacing:-.01em}
+.hero p{font-size:13.5px;color:var(--text-2);line-height:1.75}
+.hero-orb{
+  position:absolute;right:74px;top:50%;transform:translateY(-50%);width:132px;height:132px;z-index:0;
+}
+@media (max-width:820px){.hero-orb{display:none}.hero{padding:26px 22px}.hero h1{font-size:24px}}
+
+/* ============ Chips ============ */
+.chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px}
+@media (max-width:640px){
+  .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin-right:-16px;padding-right:16px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
+  .stat:last-child{grid-column:span 2}
+  .stat{padding:15px 16px}
+  .stat b{font-size:22px}
+  .hero h1{font-size:22px}
+  .hero p{font-size:12.5px}
+  .eyebrow{font-size:9.5px;letter-spacing:.16em}
+  .safety{flex-wrap:wrap;gap:10px;align-items:flex-start}
+  .safety-txt{flex:1 1 calc(100% - 44px);min-width:0}
+  .safety-btn{order:3;width:100%;padding:9px 14px;text-align:center}
+  .sec-head h2{font-size:17px}
+  .toolbar .field{min-width:100%}
+  .toolbar .sel{flex:1;min-width:0}
+  .ev{padding:16px 16px 14px;border-radius:16px}
+  .ev h3{font-size:15.5px}
+  .ev .avatar.lg{width:38px;height:38px;font-size:13px}
+  .btn{height:36px;padding:0 13px;font-size:12.5px}
+  .ev-actions{gap:6px}
+  .vote-grid{grid-template-columns:1fr}
+  .cal-wrap{padding:16px}
+  .cal-cell{height:54px}
+  .cal-cell .lane{display:none}
+  .modal{max-height:92vh;border-radius:18px}
+  .modal-body{padding:0 16px 18px}
+  .modal-head{padding:16px 16px 12px}
+  .modal-foot{padding:12px 16px 16px}
+  .tabbar button{font-size:10px}
+  .panel{padding:18px;border-radius:16px}
+  .profile-hero .avatar{width:52px;height:52px;font-size:17px;width:52px}
+  .profile-hero h2{font-size:17px}
+  .row{flex-wrap:wrap;gap:10px}
+  .seg button{padding:6px 10px;font-size:12px}
+}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 7px;border-radius:999px;font-size:13px;
+  background:var(--surface);border:1px solid var(--border);color:var(--text-2);transition:all .16s var(--ease);
+}
+.chip .avatar{width:22px;height:22px;font-size:9px}
+.chip.on{background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:700}
+.chip.plain{padding:8px 16px}
+.chip.dashed{border-style:dashed;color:var(--text-3);background:transparent}
+
+/* ============ Stats ============ */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}
+.stat{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);padding:18px 20px;
+  box-shadow:var(--shadow-s);
+}
+.stat b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.stat span{display:block;font-size:12px;color:var(--text-3);margin-top:6px}
+@media (max-width:640px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}}
+
+/* ============ Section header ============ */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-head h2{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.sec-link{font-size:12.5px;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:4px}
+
+/* ============ Toolbar ============ */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.field{
+  flex:1;min-width:190px;display:flex;align-items:center;gap:9px;padding:0 14px;height:44px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);
+  transition:border-color .16s var(--ease);
+}
+.field:focus-within{border-color:var(--accent)}
+.field svg{width:16px;height:16px;color:var(--text-3);flex-shrink:0}
+.field input{border:none;outline:none;background:none;font-size:13.5px;color:var(--text);width:100%}
+.field input::placeholder{color:var(--text-3)}
+.sel{
+  height:44px;padding:0 34px 0 14px;border-radius:var(--radius-s);border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:13.5px;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23959bad' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 11px center;background-size:15px;
+}
+.toggle-btn{
+  height:44px;padding:0 18px;border-radius:var(--radius-s);border:1px solid var(--border);
+  background:var(--surface);font-size:13.5px;color:var(--text-2);font-weight:600;transition:all .16s var(--ease);
+}
+.toggle-btn.on{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+
+/* ============ Event cards ============ */
+.feed{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start}
+@media (max-width:960px){.feed{grid-template-columns:1fr}.feed-aside{position:static}}
+.event-list{display:flex;flex-direction:column;gap:12px}
+.ev{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px;
+  box-shadow:var(--shadow-s);transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.ev:hover{transform:translateY(-2px);box-shadow:var(--shadow-m)}
+.ev-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.ev-date{margin-left:auto;text-align:center;flex-shrink:0;padding-left:12px;border-left:1px solid var(--border)}
+.ev-date b{display:block;font-size:19px;font-weight:800;line-height:1.1}
+.ev-date span{font-size:11px;color:var(--text-3)}
+.ev-meta{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ev-meta .name{font-size:13px;font-weight:700;color:var(--text)}
+.ev-meta .time{font-size:12px;color:var(--text-3)}
+.ev h3{font-size:16.5px;font-weight:800;line-height:1.45;margin:2px 0 10px;cursor:pointer;letter-spacing:-.01em;transition:color .16s var(--ease)}
+.ev h3:hover{color:var(--accent)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tag{
+  font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;
+  background:var(--surface-soft);color:var(--text-2);
+}
+.tag.green{background:#e7f8f2;color:#1f9d7d}
+[data-theme="dark"] .tag.green{background:#17322c;color:#5fd0b4}
+.tag.purple{background:var(--accent-soft);color:var(--accent)}
+.ev-place{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-2);margin-bottom:14px;flex-wrap:wrap}
+.ev-live{
+  margin-left:auto;font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;
+  background:#e7f8f2;color:#1f9d7d;cursor:pointer;
+}
+[data-theme="dark"] .ev-live{background:#17322c;color:#5fd0b4}
+.ev-rel{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.ev-rel-head{display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--accent-soft)}
+.ev-rel-head b{font-size:12.5px;color:var(--accent)}
+.ev-rel-head span{font-size:10.5px;color:var(--text-3);margin-left:auto}
+.ev-rel-item{display:flex;align-items:center;gap:10px;padding:11px 13px;border-top:1px solid var(--border);cursor:pointer;transition:background .16s var(--ease)}
+.ev-rel-item:hover{background:var(--surface-soft)}
+.ev-rel-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ev-rel-item b{display:block;font-size:12.5px;color:var(--text);margin-bottom:2px}
+.ev-rel-item span{font-size:11px;color:var(--text-3)}
+.ev-rel-go{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0}
+.ev-place svg{width:14px;height:14px;color:var(--text-3)}
+.ev-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:38px;padding:0 16px;border-radius:10px;font-size:13px;font-weight:700;
+  transition:transform .16s var(--ease),filter .16s var(--ease),background .16s var(--ease);
+}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(123,110,240,.28)}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.ev-foot{
+  display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;
+  border-top:1px dashed var(--border);font-size:11.5px;color:var(--text-3);
+}
+.ev-foot .report{margin-left:auto;color:var(--text-2);font-size:11.5px;font-weight:600;padding:4px 8px;border-radius:7px}
+.ev-foot .report:hover{background:var(--surface-soft);color:var(--danger)}
+
+/* ============ Aside cards ============ */
+.feed-aside{display:flex;flex-direction:column;gap:12px;position:sticky;top:76px}
+.aside-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;
+  box-shadow:var(--shadow-s);
+}
+.aside-card h4{font-size:13.5px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.aside-card h4 svg{width:15px;height:15px;color:var(--accent)}
+.aside-card p{font-size:12.5px;color:var(--text-2);line-height:1.8}
+.aside-card .k{color:var(--accent);font-weight:700}
+.dot-list{display:flex;flex-direction:column;gap:9px}
+.dot-list div{display:flex;gap:8px;font-size:12.5px;color:var(--text-2);line-height:1.65}
+.dot-list div:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:7px;flex-shrink:0}
+
+/* ============ Safety banner ============ */
+.safety{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;margin-bottom:16px;
+  background:linear-gradient(90deg,#fff4e8,#fff9f2);border:1px solid #ffe1bc;
+}
+[data-theme="dark"] .safety{background:linear-gradient(90deg,#2c2318,#231d16);border-color:#463520}
+.safety-ico{width:30px;height:30px;border-radius:9px;background:#ffb547;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.safety-ico svg{width:17px;height:17px}
+.safety-txt{font-size:12.5px;color:#8a5a12;line-height:1.6;flex:1}
+[data-theme="dark"] .safety-txt{color:#e0b071}
+.safety-txt b{font-weight:800}
+.safety-btn{
+  flex-shrink:0;padding:7px 14px;border-radius:9px;background:#fff;border:1px solid #ffcf94;
+  font-size:12px;font-weight:700;color:#b8721c;transition:all .16s var(--ease);
+}
+[data-theme="dark"] .safety-btn{background:#3a2c1c;border-color:#5c4527;color:#e0b071}
+.safety-btn:hover{background:#ffb547;color:#fff;border-color:#ffb547}
+
+/* ============ Generic panel ============ */
+.panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--shadow-s);
+  margin-bottom:16px;
+}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+.panel-head h3{font-size:16px;font-weight:800}
+.panel-head p{font-size:12.5px;color:var(--text-3);margin-top:4px}
+.empty{color:var(--text-3);font-size:13px;text-align:center;padding:32px 0}
+
+/* ============ Vote cards ============ */
+.vote-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.vote-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;
+  box-shadow:var(--shadow-s);display:flex;flex-direction:column;gap:10px;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.vote-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-m)}
+.vote-head{display:flex;align-items:center;gap:11px}
+.vote-head b{font-size:14px;font-weight:800;display:block}
+.vote-head span{font-size:11.5px;color:var(--text-3)}
+.vote-card p{font-size:12.5px;color:var(--text-2);line-height:1.7;flex:1}
+.bar{height:5px;border-radius:3px;background:var(--surface-soft);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+
+/* ============ Calendar ============ */
+.cal-wrap{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow-s)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-head b{font-size:16px;font-weight:800}
+.cal-nav{display:flex;gap:6px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{font-size:11px;color:var(--text-3);text-align:center;padding:4px 0;font-weight:600}
+.cal-dow{font-size:11px;color:var(--text-3);text-align:center;padding:6px 0;font-weight:600}
+.cal-cell{
+  height:66px;border-radius:10px;border:1px solid transparent;background:var(--surface-soft);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:12.5px;color:var(--text-2);transition:all .16s var(--ease);
+}
+.cal-cell.blank{background:transparent}
+.cal-cell.has{position:relative}
+.cal-cell .lane{
+  position:absolute;left:5px;right:5px;bottom:6px;height:15px;border-radius:4px;
+  background:var(--lane);color:#5b52b8;font-size:9.5px;font-weight:700;font-style:normal;
+  line-height:15px;text-align:center;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+}
+[data-theme="dark"] .cal-cell .lane{background:#2f2a52;color:#b3a9ff}
+.cal-cell.has{background:var(--accent-soft);color:var(--accent);font-weight:700;cursor:pointer}
+.cal-cell.has:hover{border-color:var(--accent)}
+.cal-cell.today{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.cal-cell i{width:4px;height:4px;border-radius:50%;background:var(--accent);display:block}
+.cal-side{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.cal-mini{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 14px;border-radius:12px;background:var(--surface-soft);border-left:3px solid var(--accent);
+  cursor:pointer;transition:all .16s var(--ease);
+}
+.cal-mini:hover{background:var(--accent-soft)}
+.cal-mini b{font-size:13px;display:block;margin-bottom:3px;color:var(--text)}
+.cal-mini .avatar{width:30px;height:30px;font-size:11px}
+.cal-mini span{font-size:11.5px;color:var(--text-3)}
+
+/* ============ UGC ============ */
+.ugc-list{display:flex;flex-direction:column;gap:10px}
+.ugc-item{
+  display:flex;gap:12px;padding:15px;border-radius:14px;background:var(--surface-soft);border:1px solid var(--border);
+}
+.ugc-item .avatar{width:34px;height:34px;font-size:12px}
+.ugc-item b{font-size:13.5px}
+.ugc-item .sub{font-size:11.5px;color:var(--text-3);margin:2px 0 6px}
+.ugc-item p{font-size:12.5px;color:var(--text-2);line-height:1.65}
+.badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:#e7f8f2;color:#1f9d7d;margin-left:6px}
+.badge.pending{background:#fff4e8;color:#b8721c}
+
+
+/* ============ UGC 地图 ============ */
+.ugc-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (max-width:1000px){
+  .ugc-layout{display:flex;flex-direction:column;align-items:stretch}
+  .map-card{order:-1;width:100%}
+  .ugc-layout > .panel{width:100%}
+}
+.map-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:14px;
+  box-shadow:var(--shadow-s);position:sticky;top:76px;
+}
+@media (max-width:1000px){.map-card{position:static}}
+.map-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 4px}
+.map-toolbar b{font-size:13.5px;font-weight:800}
+.map-toolbar span{font-size:11.5px;color:var(--text-3)}
+.map-toolbar .city{
+  margin-left:auto;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);
+  padding:5px 11px;border-radius:8px;
+}
+.map-stage{display:flex;flex-direction:column;gap:10px}
+.map-stage .gm-wrap{height:260px}
+.map-chips{display:flex;gap:6px;flex-wrap:wrap}
+.map-chip{
+  padding:6px 11px;border-radius:9px;font-size:11.5px;font-weight:600;background:var(--surface-soft);
+  color:var(--text-2);border:1px solid transparent;transition:all .16s var(--ease);max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.map-chip:hover{border-color:var(--accent);color:var(--accent)}
+.map-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.map-empty{font-size:11.5px;color:var(--text-3)}
+.map-detail{border:1px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.map-detail b{display:block;font-size:13px;color:var(--text);margin-bottom:3px}
+.map-detail span{font-size:11px;color:var(--text-3)}
+.map-detail p{font-size:12px;color:var(--text-2);line-height:1.65;margin-top:7px}
+.map-stage svg.land{position:absolute;inset:0;width:100%;height:100%}
+.pin{
+  position:absolute;transform:translate(-50%,-100%);cursor:pointer;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:0;transition:transform .18s var(--ease);
+}
+.pin:hover{transform:translate(-50%,-100%) scale(1.08);z-index:5}
+.pin .dot{
+  width:26px;height:26px;border-radius:50% 50% 50% 4px;transform:rotate(45deg);
+  background:var(--accent);box-shadow:0 6px 14px rgba(123,110,240,.45);
+  display:flex;align-items:center;justify-content:center;
+}
+.pin .dot>span{transform:rotate(-45deg);font-size:10.5px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.pin.green .dot{background:#2fbf9b;box-shadow:0 6px 14px rgba(47,191,155,.42)}
+.pin.new .dot:after{
+  content:"";position:absolute;inset:-6px;border-radius:inherit;border:2px solid var(--accent);
+  animation:ping 1.6s ease-out infinite;
+}
+@keyframes ping{0%{transform:rotate(45deg) scale(.85);opacity:.9}100%{transform:rotate(45deg) scale(1.5);opacity:0}}
+.map-pop{
+  position:absolute;left:50%;bottom:34px;transform:translateX(-50%) scale(.9);
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px;
+  box-shadow:var(--shadow-m);width:186px;opacity:0;pointer-events:none;transition:all .18s var(--ease);z-index:6;
+}
+.pin:hover .map-pop,.pin.show .map-pop{opacity:1;pointer-events:auto;transform:translateX(-50%) scale(1)}
+.pin.right .map-pop{left:auto;right:0;transform:scale(.9)}
+.pin.right:hover .map-pop,.pin.right.show .map-pop{transform:scale(1)}
+.map-pop b{font-size:12px;display:block;margin-bottom:3px;color:var(--text)}
+.map-pop span{font-size:10.5px;color:var(--text-3);line-height:1.5;display:block}
+.map-legend{
+  display:flex;gap:14px;padding:10px 4px 2px;font-size:11px;color:var(--text-3);flex-wrap:wrap;
+}
+.map-legend i{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.ugc-item{cursor:pointer;transition:border-color .16s var(--ease),background .16s var(--ease)}
+.ugc-item:hover{border-color:var(--accent);background:var(--surface)}
+.ugc-item.hl{border-color:var(--accent);background:var(--accent-soft)}
+.ugc-item .spot{font-size:11.5px;color:var(--accent);font-weight:700;margin-top:6px;display:flex;align-items:center;gap:5px}
+.ugc-item .spot svg{width:12px;height:12px}
+.fresh{animation:freshIn .5s var(--ease) both}
+@keyframes freshIn{from{opacity:0;transform:translateY(-8px);background:var(--accent-soft)}to{opacity:1;transform:none}}
+
+
+/* Fans Club */
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.fc-card{
+  border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--surface-soft);
+  display:flex;flex-direction:column;gap:8px;transition:all .18s var(--ease);
+}
+.fc-card:hover{border-color:var(--accent);background:var(--surface);box-shadow:var(--shadow-s)}
+.fc-top{display:flex;align-items:center;gap:10px}
+.fc-top b{font-size:13.5px;display:block}
+.fc-top span{font-size:11px;color:var(--text-3)}
+.fc-card p{font-size:12px;color:var(--text-2);line-height:1.65}
+.fc-foot{display:flex;align-items:center;gap:8px;margin-top:auto}
+.fc-pill{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.fc-link{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--accent)}
+
+
+/* 子页签 */
+.ugc-tabs{display:flex;gap:6px;padding:5px;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;box-shadow:var(--shadow-s)}
+.ugc-tab{
+  flex:1;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:700;color:var(--text-2);
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:all .18s var(--ease);
+}
+.ugc-tab:hover{color:var(--text)}
+.ugc-tab.active{background:var(--accent-soft);color:var(--accent)}
+.ugc-tab-n{font-size:10.5px;font-weight:800;padding:1px 6px;border-radius:20px;background:var(--surface-soft);color:var(--text-3)}
+.ugc-tab.active .ugc-tab-n{background:var(--accent);color:#fff}
+.ugc-pane{display:none}
+.ugc-pane.active{display:block;animation:fadeUp .3s var(--ease) both}
+@media (max-width:520px){
+  .ugc-tabs{flex-wrap:wrap}
+  .ugc-tab{flex:1 1 100%;justify-content:flex-start;padding-left:16px}
+}
+
+/* 筛选 chips */
+.chip-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip-row button{
+  padding:6px 13px;border-radius:20px;font-size:12.5px;font-weight:600;background:var(--surface-soft);
+  color:var(--text-2);border:1px solid transparent;transition:all .16s var(--ease);
+}
+.chip-row button:hover{border-color:var(--border)}
+.chip-row button.on{background:var(--accent-soft);color:var(--accent)}
+
+/* 无料卡 */
+.mk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.mk-card{
+  border:1px solid var(--border);border-radius:16px;padding:15px;background:var(--surface);
+  display:flex;flex-direction:column;gap:9px;transition:all .18s var(--ease);
+}
+.mk-card:hover{border-color:var(--accent);box-shadow:var(--shadow-s);transform:translateY(-2px)}
+.mk-top{display:flex;align-items:center;gap:9px}
+.mk-top b{font-size:13.5px;display:block;line-height:1.35}
+.mk-top span{font-size:11px;color:var(--text-3)}
+.mk-type{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);align-self:flex-start}
+.mk-type.give{background:#e7f8f2;color:#1f9d7d}
+[data-theme="dark"] .mk-type.give{background:#17322c;color:#5fd0b4}
+.mk-type.swap{background:#fff4e8;color:#b8721c}
+[data-theme="dark"] .mk-type.swap{background:#2c2318;color:#e0b071}
+.mk-card p{font-size:12.5px;color:var(--text-2);line-height:1.65}
+.mk-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);margin-top:auto;padding-top:9px;border-top:1px dashed var(--border)}
+.mk-meta .btn{height:30px;padding:0 12px;font-size:12px;margin-left:auto}
+
+/* 周边列表 */
+.gd-list{display:flex;flex-direction:column;gap:10px}
+.gd-item{
+  display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--border);
+  border-radius:14px;background:var(--surface);transition:all .18s var(--ease);
+}
+.gd-item:hover{border-color:var(--accent);background:var(--surface-soft)}
+.gd-thumb{
+  width:46px;height:46px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:11.5px;font-weight:800;letter-spacing:.02em;
+}
+.gd-main{min-width:0;flex:1}
+.gd-main b{font-size:13.5px;display:block;margin-bottom:3px}
+.gd-main span{font-size:11.5px;color:var(--text-3)}
+.gd-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.gd-price{font-size:14px;font-weight:800;color:var(--text)}
+.gd-price.free{color:#1f9d7d}
+.gd-cond{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--surface-soft);color:var(--text-2)}
+@media (max-width:520px){
+  .gd-item{flex-wrap:wrap}
+  .gd-side{flex-direction:row;align-items:center;gap:10px;width:100%;justify-content:flex-end}
+}
+
+
+/* 粉丝团频道 */
+.fc-join{
+  margin-left:auto;font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:8px;
+  background:var(--accent);color:#fff;transition:all .16s var(--ease);
+}
+.fc-join.on{background:var(--surface);color:var(--accent);border:1px solid var(--accent)}
+.fc-channel{font-size:11.5px;font-weight:700;color:var(--text);padding:5px 11px;border-radius:8px;background:var(--surface);border:1px solid var(--border)}
+.fc-channel:hover{border-color:var(--accent);color:var(--accent)}
+.ch-note{background:var(--surface-soft);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--text-2);line-height:1.7;margin-bottom:14px}
+.ch-sec{margin-bottom:14px}
+.ch-sec h5{font-size:12px;font-weight:800;color:var(--text);margin-bottom:7px;display:flex;gap:6px;align-items:center}
+.ch-sec h5 span{font-size:10.5px;font-weight:800;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:20px}
+.ch-item{padding:9px 12px;border-radius:10px;background:var(--surface-soft);margin-bottom:6px;cursor:pointer;transition:all .16s var(--ease)}
+.ch-item:hover{background:var(--accent-soft)}
+.ch-item b{display:block;font-size:12.5px;color:var(--text);margin-bottom:2px}
+.ch-item span{font-size:11px;color:var(--text-3)}
+.ch-empty{font-size:12px;color:var(--text-3);padding:8px 2px}
+.ch-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
+.ch-actions .btn{flex:1;height:36px;font-size:12.5px;min-width:100px}
+.ch-foot{margin-top:10px}
+.ch-foot .btn{height:36px;font-size:12.5px}
+
+
+/* 联系申请 / 收件箱 */
+.contact-post{background:var(--surface-soft);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.contact-post b{display:block;font-size:13px;color:var(--text);margin-bottom:3px}
+.contact-post span{display:block;font-size:11.5px;color:var(--text-3);margin-bottom:5px}
+.contact-post em{font-size:11px;font-style:normal;color:var(--accent);font-weight:700}
+.contact-warn{background:#fff4e8;border-radius:10px;padding:11px 13px;font-size:11.5px;line-height:1.7;color:#8a5a12}
+[data-theme="dark"] .contact-warn{background:#2c2318;color:#e0b071}
+.contact-warn b{color:#b8721c}
+[data-theme="dark"] .contact-warn b{color:#f0b465}
+.th-list{display:flex;flex-direction:column;gap:8px}
+.th-item{display:flex;align-items:center;gap:11px;padding:12px;border-radius:12px;background:var(--surface-soft);cursor:pointer;transition:all .16s var(--ease)}
+.th-item:hover{background:var(--accent-soft)}
+.th-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.th-main{min-width:0;flex:1}
+.th-main b{display:block;font-size:12.5px;color:var(--text);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.th-main span{font-size:11.5px;color:var(--text-3);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.th-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.th-badge{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px}
+.th-badge.pending{background:#fff4e8;color:#b8721c}
+.th-badge.accepted{background:#e7f8f2;color:#1f9d7d}
+.th-badge.declined{background:#fdeaea;color:#c0392b}
+[data-theme="dark"] .th-badge.pending{background:#2c2318;color:#e0b071}
+[data-theme="dark"] .th-badge.accepted{background:#17322c;color:#5fd0b4}
+.th-time{font-size:10px;color:var(--text-3)}
+.th-meta{font-size:11.5px;color:var(--text-3);margin-bottom:12px}
+.th-msg{margin-bottom:10px;display:flex;flex-direction:column;gap:4px}
+.th-msg span{background:var(--surface-soft);border-radius:12px;padding:11px 13px;font-size:12.5px;color:var(--text-2);line-height:1.65}
+.th-msg.mine span{background:var(--accent-soft);color:var(--text)}
+.th-msg em{font-size:10.5px;color:var(--text-3);font-style:normal}
+.th-msg.mine em{text-align:right}
+.th-tip{background:var(--surface-soft);border-radius:10px;padding:11px 13px;font-size:11.5px;color:var(--text-2);line-height:1.7;margin-bottom:12px}
+.th-ok{background:#e7f8f2;color:#1f9d7d;border-radius:10px;padding:11px 13px;font-size:12px;font-weight:700;margin-bottom:12px}
+[data-theme="dark"] .th-ok{background:#17322c;color:#5fd0b4}
+.th-actions{display:flex;gap:8px}
+.th-actions .btn{flex:1;height:38px;font-size:12.5px}
+.dot-badge{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--danger);display:none}
+
+
+/* 领取码 */
+.claim-list{display:flex;flex-direction:column;gap:9px}
+.claim-card{
+  display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:14px;
+  background:var(--surface);transition:all .16s var(--ease);
+}
+.claim-card.done{opacity:.62}
+.claim-left{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.claim-code{
+  font-family:"SF Mono",Menlo,Consolas,monospace;font-size:17px;font-weight:800;letter-spacing:.12em;
+  color:var(--accent);background:var(--accent-soft);padding:5px 11px;border-radius:9px;align-self:flex-start;
+}
+.claim-card.done .claim-code{color:var(--text-3);background:var(--surface-soft);text-decoration:line-through}
+.claim-meta{font-size:13px;font-weight:700;color:var(--text);margin-top:4px}
+.claim-sub{font-size:11.5px;color:var(--text-3)}
+.claim-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.claim-status{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:20px}
+.claim-status.pending{background:#fff4e8;color:#b8721c}
+.claim-status.used{background:var(--surface-soft);color:var(--text-3)}
+[data-theme="dark"] .claim-status.pending{background:#2c2318;color:#e0b071}
+.claim-time{font-size:10px;color:var(--text-3)}
+.claim-inline{
+  font-family:"SF Mono",Menlo,monospace;font-size:11px;font-weight:800;color:var(--accent);
+  background:var(--accent-soft);padding:3px 8px;border-radius:7px;letter-spacing:.06em;
+}
+@media (max-width:520px){
+  .claim-card{flex-wrap:wrap}
+  .claim-right{flex-direction:row;align-items:center;gap:8px;width:100%;justify-content:flex-end}
+}
+
+/* 信用分 */
+.credit{
+  display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--text-2);
+  background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:20px;cursor:pointer;
+  transition:all .16s var(--ease);
+}
+.credit:hover{border-color:var(--accent);color:var(--accent)}
+.credit b{color:var(--text);font-size:10.5px}
+.credit.new{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.stars{letter-spacing:.5px;font-size:10px;color:#f0a93b}
+.stars i{color:var(--border);font-style:normal}
+.cr-head{display:flex;align-items:center;gap:11px}
+.cr-head span:last-child{font-size:14px;font-weight:800;color:var(--text)}
+.cr-head small{display:block;font-size:11px;font-weight:500;color:var(--text-3);margin-top:3px}
+.cr-avatar{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#7b6ef0,#a89bff);
+}
+.cr-score{display:flex;align-items:center;gap:16px;background:var(--surface-soft);border-radius:14px;padding:16px;margin-bottom:14px}
+.cr-num{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--text);line-height:1}
+.cr-sub{font-size:11px;color:var(--text-3);margin-top:5px}
+.cr-bars{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.cr-bar{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--text-2)}
+.cr-bar span{width:64px;flex-shrink:0}
+.cr-bar .bar{flex:1}
+.cr-bar b{width:26px;text-align:right;font-size:11.5px;color:var(--text)}
+.cr-h{font-size:12px;font-weight:800;color:var(--text);margin:4px 0 9px;display:flex;gap:6px;align-items:center}
+.cr-h span{font-size:10.5px;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:20px}
+.cr-rv{border:1px solid var(--border);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.cr-rv-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.cr-rv-top b{font-size:12px;color:var(--text)}
+.cr-rv-top em{margin-left:auto;font-size:10px;font-style:normal;color:var(--text-3)}
+.cr-rv-post{font-size:10.5px;color:var(--accent);font-weight:700;margin-bottom:4px}
+.cr-rv p{font-size:12px;color:var(--text-2);line-height:1.65}
+.cr-tip{font-size:11px;color:var(--text-3);line-height:1.7;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+.review-stars{display:flex;gap:6px;justify-content:center;margin:4px 0 16px}
+.review-stars button{
+  font-size:30px;line-height:1;color:var(--border);transition:all .14s var(--ease);padding:0 2px;
+}
+.review-stars button:hover{transform:scale(1.12)}
+.review-stars button.on{color:#f0a93b;text-shadow:0 3px 10px rgba(240,169,59,.4)}
+
+/* ============ Profile ============ */
+.profile-hero{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.profile-hero .avatar{width:62px;height:62px;font-size:20px;background:linear-gradient(135deg,#7b6ef0,#a89bff)}
+.profile-hero h2{font-size:19px;font-weight:800}
+.profile-hero p{font-size:12.5px;color:var(--text-3);margin-top:4px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.row .lbl b{font-size:13.5px;font-weight:700;display:block}
+.row .lbl span{font-size:11.5px;color:var(--text-3);margin-top:3px;display:block}
+.seg{display:flex;gap:4px;padding:4px;background:var(--surface-soft);border-radius:11px}
+.seg button{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-2);transition:all .16s var(--ease);white-space:nowrap}
+.seg button.on{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-s)}
+.switch{width:44px;height:25px;border-radius:13px;background:var(--border);position:relative;flex-shrink:0;transition:background .2s var(--ease)}
+.switch:after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s var(--ease)}
+.switch.on{background:var(--accent)}
+.switch.on:after{transform:translateX(19px)}
+
+/* ============ Modal ============ */
+.overlay{
+  position:fixed;inset:0;background:rgba(20,22,34,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:20px;z-index:200;
+}
+.overlay.show{display:flex;animation:fadeIn .2s var(--ease) both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border-radius:22px;width:100%;max-width:520px;max-height:88vh;overflow:hidden;
+  box-shadow:0 24px 70px rgba(20,22,40,.28);display:flex;flex-direction:column;
+  animation:pop .26s var(--ease) both;
+}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;padding:20px 22px 14px;gap:10px}
+.modal-head h3{font-size:16.5px;font-weight:800;flex:1}
+.modal-close{
+  width:30px;height:30px;border-radius:50%;background:var(--surface-soft);color:var(--text-2);
+  font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .16s var(--ease);
+}
+.modal-close:hover{background:var(--danger);color:#fff}
+.modal-body{padding:0 22px 22px;overflow-y:auto;font-size:13px;color:var(--text-2);line-height:1.7}
+.modal-foot{padding:14px 22px 20px;display:flex;gap:10px;border-top:1px solid var(--border)}
+.modal-foot .btn{flex:1}
+
+.form-field{margin-bottom:13px}
+.form-field label{display:block;font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px}
+.form-field input,.form-field textarea,.form-field select{
+  width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--border);background:var(--surface-soft);
+  font-size:13px;color:var(--text);outline:none;transition:border-color .16s var(--ease);
+}
+.form-field input:focus,.form-field textarea:focus{border-color:var(--accent)}
+.form-field textarea{resize:vertical;min-height:80px}
+
+/* detail modal */
+.detail-star{display:flex;align-items:center;gap:13px;padding:14px;background:var(--surface-soft);border-radius:14px;margin-bottom:16px}
+.detail-star h4{font-size:15px;font-weight:800;color:var(--text)}
+.detail-star p{font-size:11.5px;color:var(--text-3);margin-top:2px}
+.detail-title{font-size:17px;font-weight:800;color:var(--text);line-height:1.45;margin-bottom:10px}
+.kv{display:flex;gap:8px;font-size:12.5px;margin-bottom:7px;color:var(--text-2)}
+.kv b{color:var(--accent);flex-shrink:0;font-weight:700}
+.detail-desc{background:var(--surface-soft);border-radius:12px;padding:13px 15px;font-size:12.5px;line-height:1.75;color:var(--text-2);margin:12px 0}
+.detail-list{margin:0 0 14px}
+.detail-list h5{font-size:12px;font-weight:800;margin-bottom:7px}
+.detail-list ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.detail-list li{font-size:12.5px;color:var(--text-2);padding-left:20px;position:relative}
+.detail-list li:before{position:absolute;left:0}
+.detail-list.ok li:before{content:"✓";color:var(--accent-2);font-weight:800}
+.detail-list.warn li:before{content:"!";color:var(--danger);font-weight:800}
+
+
+/* detail 地图指引 */
+.detail-map{
+  border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:12px 0 14px;background:var(--surface-soft);
+}
+.dm-stage{position:relative;height:168px;background:#eef2fb}
+[data-theme="dark"] .dm-stage{background:#161a26}
+.dm-stage svg{position:absolute;inset:0;width:100%;height:100%}
+.dm-pin{
+  position:absolute;left:50%;top:52%;transform:translate(-50%,-100%);
+  width:30px;height:30px;border-radius:50% 50% 50% 4px;rotate:45deg;
+  background:var(--accent);box-shadow:0 8px 18px rgba(123,110,240,.45);
+  display:flex;align-items:center;justify-content:center;z-index:2;
+}
+.dm-pin>span{rotate:-45deg;font-size:11px;font-weight:800;color:#fff}
+.dm-pin:after{
+  content:"";position:absolute;inset:-7px;border-radius:inherit;border:2px solid var(--accent);
+  animation:ping 1.8s ease-out infinite;
+}
+.dm-badge{
+  position:absolute;left:10px;top:10px;padding:4px 9px;border-radius:8px;font-size:10.5px;font-weight:800;
+  background:var(--surface);color:var(--text);border:1px solid var(--border);z-index:3;
+}
+.dm-scale{position:absolute;right:10px;bottom:8px;font-size:9.5px;color:#8f9bb5;letter-spacing:.05em}
+.dm-addr{
+  display:flex;gap:8px;align-items:flex-start;padding:11px 13px;font-size:12px;color:var(--text-2);
+  border-top:1px solid var(--border);background:var(--surface);line-height:1.6;
+}
+.dm-addr svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;color:var(--accent)}
+
+
+/* Google 地图 */
+.gm-wrap{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--surface-soft)}
+.gm-frame{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;background:transparent}
+.gm-fallback{
+  position:absolute;inset:0;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  color:var(--text-3);font-size:11.5px;text-align:center;padding:16px;
+}
+.gm-fallback svg{width:26px;height:26px;opacity:.5}
+.gm-fallback a{color:var(--accent);font-weight:700;font-size:11.5px}
+.gm-tag{
+  position:absolute;left:10px;top:10px;z-index:2;padding:4px 9px;border-radius:8px;font-size:10.5px;font-weight:800;
+  background:var(--surface);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow-s);
+}
+.gm-key{
+  position:absolute;right:8px;bottom:6px;z-index:2;font-size:9px;color:#8f9bb5;
+  background:rgba(255,255,255,.82);padding:2px 6px;border-radius:5px;
+}
+[data-theme="dark"] .gm-key{background:rgba(20,22,32,.7);color:#9aa3bd}
+.detail-map{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:12px 0 14px;background:var(--surface)}
+.detail-map .gm-wrap{border:0;border-radius:0}
+.detail-map-foot{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+.detail-map-foot .btn{height:32px;font-size:12px;padding:0 12px;flex:1;min-width:110px}
+
+/* terminal */
+.terminal{
+  background:#12131a;border-radius:14px;padding:16px;font-family:"SF Mono",Menlo,Consolas,monospace;
+  font-size:11.5px;line-height:1.9;color:#8be9c0;height:250px;overflow-y:auto;
+}
+.terminal div{white-space:pre-wrap;word-break:break-all;opacity:0;animation:lineIn .3s var(--ease) forwards}
+.terminal div.err{color:#ff8f8f}
+.terminal div.ok{color:#a8b4ff}
+@keyframes lineIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.progress{height:4px;border-radius:2px;background:var(--surface-soft);margin-top:14px;overflow:hidden}
+.progress>i{display:block;height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,#7b6ef0,#5fd0b4);transition:width .3s linear}
+
+/* toast */
+#toastBox{position:fixed;right:22px;bottom:22px;z-index:400;display:flex;flex-direction:column;gap:9px}
+.toast{
+  background:var(--text);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;
+  box-shadow:0 14px 34px rgba(0,0,0,.22);animation:toastIn .3s var(--ease) both;max-width:320px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* mobile tabbar + drawer */
+.tabbar{
+  display:none;position:fixed;left:0;right:0;bottom:0;height:60px;background:var(--surface);
+  border-top:1px solid var(--border);z-index:120;padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar-in{display:flex;height:60px}
+.tabbar button{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:10.5px;color:var(--text-3);font-weight:600;
+}
+.tabbar button svg{width:20px;height:20px}
+.tabbar button.active{color:var(--accent)}
+.scrim{position:fixed;inset:0;background:rgba(16,18,28,.5);z-index:140;display:none}
+.scrim.show{display:block;animation:fadeIn .2s var(--ease) both}
+
+@media (max-width:1240px){
+  .sidebar{width:196px}
+}
+@media (max-width:1080px){
+  .feed{grid-template-columns:1fr}
+  .feed-aside{position:static}
+}
+@media (max-width:900px){
+  .topbar{gap:6px}
+  .crumbs .sep,.crumbs span:first-child{display:none}
+  .crumbs b{font-size:14px}
+  .btn-login{display:none}
+  .hero:after{width:220px;height:220px;right:-90px;top:-70px}
+
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform .28s var(--ease);width:250px}
+  .sidebar.open{transform:none}
+  .menu-btn{display:flex}
+  .content{padding:18px 16px 90px}
+  .topbar{padding:0 14px;height:58px}
+  .top-ghost span{display:none}
+  .tabbar{display:block}
+  .feed-aside{position:static}
+  .sec-head h2{font-size:17.5px}
+  .crumbs b{font-size:13px}
+  .ev{padding:16px}
+  #toastBox{right:12px;left:12px;bottom:72px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/></svg>
+      <div>
+        <div class="brand-name">CHASING</div>
+        <div class="brand-sub">把喜欢，带到现场</div>
+      </div>
+    </div>
+
+    <div class="bot-hint">自动抓取公开行程 · 已同步 <span id="syncCount">0</span> 次</div>
+
+    <div>
+      <div class="nav-label">看行程</div>
+      <div class="nav">
+        <button class="nav-item active" data-page="discover" onclick="switchPage('discover')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>
+          发现行程
+        </button>
+        <button class="nav-item" data-page="calendar" onclick="switchPage('calendar')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+          行程日历
+        </button>
+        <button class="nav-item" data-page="vote" onclick="switchPage('vote')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-6.2-8.56"/></svg>
+          公告 · 票务 · 投票
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-label">一起玩</div>
+      <div class="nav">
+        <button class="nav-item" data-page="ugc" onclick="switchPage('ugc')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 12a8 8 0 01-8 8H7l-4 3V12a8 8 0 018-8h7"/></svg>
+          粉丝团 · 互助
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-label">我的</div>
+      <div class="nav">
+        <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+          设置与账户信息
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-label" style="display:flex;justify-content:space-between;align-items:center">
+        <span>我的关注 <span id="starCountLabel" style="color:rgba(255,255,255,.6)"></span></span>
+        <button onclick="switchPage('discover')" style="color:rgba(255,255,255,.5);font-size:15px;line-height:1">+</button>
+      </div>
+      <div class="star-list" id="starList"></div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" onclick="toggleSidebar(true)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="crumbs">
+        <span>我的追星空间</span><span class="sep">/</span><b id="crumbNow">发现行程</b>
+      </div>
+      <div class="topbar-right">
+        <button class="top-ghost" onclick="openModal('scraperModal',true)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+          <span>查看来源同步状态</span>
+        </button>
+        <button class="icon-btn" onclick="toggleThemeQuick()" title="切换深浅色">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="openPostModal()" title="发布内容">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button class="icon-btn" style="position:relative" onclick="openInbox()" title="收件箱">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.5 8.5 0 01-3.9-.9L3 21l1.9-5.1a8.4 8.4 0 016.6-12.8h.5a8.4 8.4 0 019 8.4z"/></svg>
+          <span class="dot-badge" id="msgDot"></span>
+        </button>
+        <button class="btn-login" onclick="switchPage('profile')">登录 / 注册</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ---------- 发现行程 ---------- -->
+      <section class="page active" id="page-discover">
+        <div class="hero">
+          <div class="hero-inner">
+            <div class="eyebrow">FOR EVERY MOMENT THAT MATTERS</div>
+            <h1>下一站，<br>和喜欢的他们见面。</h1>
+            <p>从官宣到入场，只收录能核对的公开来源。</p>
+          </div>
+          <svg class="hero-orb" viewBox="0 0 200 200" fill="none">
+            <ellipse cx="100" cy="100" rx="88" ry="30" stroke="rgba(123,110,240,.28)" stroke-width="1.4" transform="rotate(-18 100 100)"/>
+            <ellipse cx="100" cy="100" rx="88" ry="30" stroke="rgba(95,208,180,.28)" stroke-width="1.4" transform="rotate(48 100 100)"/>
+            <circle cx="100" cy="100" r="46" fill="url(#orb)"/>
+            <defs><radialGradient id="orb" cx="35%" cy="30%"><stop offset="0" stop-color="#c9c0ff"/><stop offset="60%" stop-color="#a79cf5"/><stop offset="1" stop-color="#8a7cf0"/></radialGradient></defs>
+          </svg>
+        </div>
+
+        <div class="chips" id="starChips"></div>
+
+        <div class="stats">
+          <div class="stat"><b id="statEvents">0</b><span>符合筛选的活动</span></div>
+          <div class="stat"><b id="statFollow">0</b><span>我关注的艺人</span></div>
+          <div class="stat"><b id="statSync">0/0</b><span>来源同步覆盖</span></div>
+        </div>
+
+        <div class="safety">
+          <div class="safety-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></div>
+          <div class="safety-txt"><b>安全提示：</b>只参加公开、允许粉丝参与的活动。平台与主办方不会私信索要押金，任何「内部票、代抢、垫付」都是骗局。</div>
+          <button class="safety-btn" onclick="openReportModal()">举报 / 纠错</button>
+        </div>
+
+        <div class="sec-head">
+          <h2>动态 · 近期行程</h2>
+          <button class="sec-link" onclick="switchPage('calendar')">看日历 →</button>
+        </div>
+
+        <div class="feed">
+          <div>
+            <div class="toolbar">
+              <label class="field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                <input id="searchInput" placeholder="搜索团体、活动或场馆" oninput="renderEvents()">
+              </label>
+              <select class="sel" id="filterStar" onchange="renderEvents()"><option value="">全部艺人</option></select>
+              <select class="sel" id="filterScope" onchange="renderEvents()">
+                <option value="">全球 · 全部范围</option>
+                <option value="韩国">韩国</option>
+                <option value="亚洲">亚洲</option>
+                <option value="全球">全球</option>
+              </select>
+              <button class="toggle-btn" id="onlyNearBtn" onclick="toggleOnlyNear()">只看近期</button>
+            </div>
+            <div class="event-list" id="eventList"></div>
+          </div>
+
+          <aside class="feed-aside">
+            <div class="aside-card">
+              <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>最近官宣</h4>
+              <p>已同步 <span class="k" id="asideSyncCount">0</span> 个来源，最近一次抓取 <span class="k" id="asideLastSync">—</span>。</p>
+              <p style="margin-top:8px;font-size:11.5px;color:var(--text-3)">上次同步时间：<span id="asideSyncTime">—</span></p>
+            </div>
+            <div class="aside-card">
+              <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>安心去见面</h4>
+              <div class="dot-list">
+                <div>只参加公开、允许粉丝参与的活动。</div>
+                <div>购票条件、入场时间和证件要求，出发前再核对一次。</div>
+                <div>物料交换选公共场所；不提供拼车、拼房信息。</div>
+              </div>
+            </div>
+            <div class="aside-card">
+              <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>遇到可疑信息</h4>
+              <p style="margin-bottom:12px">发现假票、黄牛或诈骗线索，直接提交给我们核实。</p>
+              <button class="btn btn-ghost" style="width:100%" onclick="openReportModal()">立即举报</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ---------- 行程日历 ---------- -->
+      <section class="page" id="page-calendar">
+        <div class="sec-head"><h2>行程日历</h2><button class="sec-link" onclick="switchPage('discover')">返回列表 →</button></div>
+        <div class="cal-wrap">
+          <div class="cal-head">
+            <b id="calLabel">—</b>
+            <div class="cal-nav">
+              <button class="icon-btn" onclick="shiftMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <button class="icon-btn" onclick="shiftMonth(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+            </div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-side" id="calSide"></div>
+        </div>
+      </section>
+
+      <!-- ---------- 投票 ---------- -->
+      <section class="page" id="page-vote">
+        <div class="sec-head"><h2>公告 · 票务 · 投票</h2></div>
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>外部票务与投票直达</h3><p>全部为平台原始购票页（韩国 / 亚洲 / 全球），不代收任何费用</p></div>
+          </div>
+          <div class="vote-grid" id="voteGrid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>票务平台直达</h3><p>韩国区域以 Interpark / Melon Ticket 为主，海外场次转至当地购票平台</p></div>
+          </div>
+          <div class="fc-grid">
+            <div class="fc-card"><div class="fc-top"><div><b>Interpark Global</b><span>全球站 · 韩国场次</span></div></div><p>韩国演出海外粉丝购票主入口，支持护照号实名。</p><div class="fc-foot"><span class="fc-pill">韩国</span><a class="fc-link" href="https://www.globalinterpark.com/" target="_blank" rel="noopener">前往 →</a></div></div>
+            <div class="fc-card"><div class="fc-top"><div><b>Melon Ticket</b><span>韩国场次</span></div></div><p>Melon 票务平台，部分场次仅支持韩国手机号验证。</p><div class="fc-foot"><span class="fc-pill">韩国</span><a class="fc-link" href="https://ticket.melon.com/" target="_blank" rel="noopener">前往 →</a></div></div>
+            <div class="fc-card"><div class="fc-top"><div><b>Ticketmaster</b><span>北美 / 欧洲 / 新加坡</span></div></div><p>全球巡演场次购票平台，需 Verified Fan 排队。</p><div class="fc-foot"><span class="fc-pill">全球</span><a class="fc-link" href="https://www.ticketmaster.com/" target="_blank" rel="noopener">前往 →</a></div></div>
+            <div class="fc-card"><div class="fc-top"><div><b>Weverse Shop</b><span>会员优先购</span></div></div><p>会员验证与优先购票入口。</p><div class="fc-foot"><span class="fc-pill">会员</span><a class="fc-link" href="https://weverse.io/" target="_blank" rel="noopener">前往 →</a></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 粉丝团 · 互助 ---------- -->
+      <section class="page" id="page-ugc">
+        <div class="sec-head"><h2>粉丝团与互助</h2><button class="sec-link" onclick="openPostModal()">+ 发布</button></div>
+
+        <div class="safety">
+          <div class="safety-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></div>
+          <div class="safety-txt"><b>交换与交易提示：</b>无料交换建议选公开场所面交；周边转出/收买请当面验货，不要先付款、不要发送证件照片。</div>
+          <button class="safety-btn" onclick="openReportModal()">举报</button>
+        </div>
+
+        <!-- 粉丝团频道 -->
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>粉丝团频道 <span id="fanclubCount" style="color:var(--accent)">0</span></h3><p>加入频道聊应援、约无料交换，也可跳转 Weverse 等平台</p></div>
+            <span class="badge" style="margin:0">Weverse / Fanclub</span>
+          </div>
+          <div class="fc-grid" id="fanclubGrid"></div>
+        </div>
+
+        <!-- 子页签 -->
+        <div class="ugc-tabs">
+          <button class="ugc-tab active" data-tab="info" onclick="switchUgcTab('info')">场馆情报</button>
+          <button class="ugc-tab" data-tab="free" onclick="switchUgcTab('free')">无料交换 <span id="freeCount" class="ugc-tab-n">0</span></button>
+          <button class="ugc-tab" data-tab="goods" onclick="switchUgcTab('goods')">周边转出 / 收买 <span id="goodsCount" class="ugc-tab-n">0</span></button>
+          <button class="ugc-tab" data-tab="claim" onclick="switchUgcTab('claim')">我的领取码 <span class="ugc-tab-n" id="claimStat">0 张</span></button>
+        </div>
+
+        <!-- 场馆情报 -->
+        <div class="ugc-pane active" id="pane-info">
+          <div class="ugc-layout">
+            <div class="panel" style="margin-bottom:0">
+              <div class="panel-head"><div><h3>已通过审核的情报 <span id="ugcCount" style="color:var(--accent)">0</span></h3><p>通过后立即展示在列表与地图上</p></div></div>
+              <div class="ugc-list" id="ugcList"></div>
+            </div>
+            <div class="map-card">
+              <div class="map-toolbar">
+                <b>情报地图</b><span>点击点位查看情报</span>
+                <span class="city">KR · GLOBAL</span>
+              </div>
+              <div class="map-stage" id="ugcMap"></div>
+              <div class="map-legend">
+                <span><i style="background:#2fbf9b"></i>已核实情报</span>
+                <span><i style="background:var(--accent)"></i>刚刚通过</span>
+                <span><i style="background:#c3c9db"></i>暂无情报</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 无料交换 -->
+        <div class="ugc-pane" id="pane-free">
+          <div class="panel">
+            <div class="panel-head">
+              <div><h3>应援无料交换</h3><p>小卡、手幅、徽章、生日应援物料 —— 免费赠送 / 求物 / 互换</p></div>
+              <button class="btn btn-ghost" onclick="openPostModal('free')">+ 发布无料</button>
+            </div>
+            <div class="chip-row" id="freeFilters"></div>
+            <div class="mk-grid" id="freeGrid"></div>
+          </div>
+        </div>
+
+        <!-- 我的领取码 -->
+        <div class="ugc-pane" id="pane-claim">
+          <div class="panel">
+            <div class="panel-head">
+              <div><h3>我的领取码</h3><p>现场出示给发帖人核销，一码只能领一次</p></div>
+              <span class="badge" style="margin:0">一码一领</span>
+            </div>
+            <div class="safety" style="margin-bottom:14px">
+              <div class="safety-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></div>
+              <div class="safety-txt"><b>注意：</b>领取码只用于现场核对，不要截图发给陌生人，也不要为了「优先领取」付任何费用。</div>
+            </div>
+            <div class="claim-list" id="claimList"></div>
+          </div>
+        </div>
+
+        <!-- 周边转出 / 收买 -->
+        <div class="ugc-pane" id="pane-goods">
+          <div class="panel">
+            <div class="panel-head">
+              <div><h3>周边转出 / 收买</h3><p>专辑、手灯、应援棒、服饰 —— 面交优先，杜绝先款</p></div>
+              <button class="btn btn-ghost" onclick="openPostModal('goods')">+ 发布周边</button>
+            </div>
+            <div class="chip-row" id="goodsFilters"></div>
+            <div class="gd-list" id="goodsGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 我的 ---------- -->
+      <section class="page" id="page-profile">
+        <div class="sec-head"><h2>设置与账户信息</h2></div>
+
+        <div class="panel">
+          <div class="profile-hero">
+            <div class="avatar">CH</div>
+            <div>
+              <h2>追星小助手</h2>
+              <p>CHASING ID · chasing_2026 · 已加入 128 天</p>
+            </div>
+          </div>
+          <div class="row"><div class="lbl"><b>登录状态</b><span>绑定手机后可同步收藏与提醒</span></div><button class="btn btn-ghost">登录 / 注册</button></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div><h3>外观</h3><p>深色模式只在这里设置</p></div></div>
+          <div class="row">
+            <div class="lbl"><b>主题</b><span>浅色 / 深色 / 跟随系统</span></div>
+            <div class="seg">
+              <button id="themeBtnLight" onclick="setThemeMode('light')">浅色</button>
+              <button id="themeBtnDark" onclick="setThemeMode('dark')">深色</button>
+              <button id="themeBtnAuto" onclick="setThemeMode('auto')">跟随系统</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div><h3>通知与权限</h3><p>只在你同意后发送</p></div></div>
+          <div class="row"><div class="lbl"><b>开票提醒</b><span>关注的艺人开票前 24 小时推送</span></div><button class="switch on" onclick="toggleSwitch(this)"></button></div>
+          <div class="row"><div class="lbl"><b>行程变更通知</b><span>时间或场地变更时提醒</span></div><button class="switch on" onclick="toggleSwitch(this)"></button></div>
+          <div class="row"><div class="lbl"><b>位置权限</b><span>用于展示附近活动，可随时关闭</span></div><button class="switch" onclick="toggleSwitch(this)"></button></div>
+          <div class="row"><div class="lbl"><b>通知权限</b><span>系统级推送开关</span></div><button class="switch on" onclick="toggleSwitch(this)"></button></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div><h3>数据</h3><p>抓取结果与情报审核会自动保存在本机，刷新不丢失</p></div><span class="badge" style="margin:0">自动保存中</span></div>
+          <div class="row"><div class="lbl"><b>导出数据库</b><span>包含艺人、行程、投票与互助情报（含地图坐标）</span></div><button class="btn btn-ghost" onclick="exportDatabase()">导出 JSON</button></div>
+          <div class="row"><div class="lbl"><b>清空本地数据</b><span>恢复为初始演示数据</span></div><button class="btn btn-ghost" onclick="resetDatabase()">重置</button></div>
+          <div class="row"><div class="lbl"><b>安全与举报</b><span>发现假票、黄牛、诈骗线索</span></div><button class="btn btn-ghost" onclick="openReportModal()">去举报</button></div>
+          <div class="row"><div class="lbl"><b>内容范围</b><span>韩国艺人为主，行程覆盖韩国 / 亚洲 / 全球</span></div><span class="badge" style="margin:0">KR · GLOBAL</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="detailTitle">行程详情</h3><button class="modal-close" onclick="closeModal('detailModal')">×</button></div>
+    <div class="modal-body" id="detailBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="scraperModal">
+  <div class="modal">
+    <div class="modal-head"><h3>AI 自动化数据同步</h3><button class="modal-close" onclick="closeModal('scraperModal')">×</button></div>
+    <div class="modal-body">
+      <div class="terminal" id="scraperTerminal"></div>
+      <div class="progress"><i id="scraperProgress"></i></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('scraperModal')">关闭</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="postModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="postModalTitle">发布内容</h3><button class="modal-close" onclick="closeModal('postModal')">×</button></div>
+    <form onsubmit="submitPostForm(event)">
+      <div class="modal-body">
+        <div class="form-field"><label>发布类型</label>
+          <select id="postKind" onchange="onPostKindChange()">
+            <option value="info">场馆情报（会上地图）</option>
+            <option value="free">应援无料交换</option>
+            <option value="goods">周边转出 / 收买</option>
+          </select>
+        </div>
+        <div class="form-field"><label>标题</label><input id="postTitle" placeholder="例：IVE 首尔场小卡互换 / KSPO DOME 安检动线" required></div>
+        <div class="form-field"><label>相关艺人 / 团体</label><input id="postStar" placeholder="例：IVE" required></div>
+
+        <div class="form-field" id="fieldVenue"><label>场馆 / 地点（会上地图）</label><input id="postVenue" placeholder="例：KSPO DOME / 高尺天空巨蛋"></div>
+
+        <div id="fieldFree" style="display:none">
+          <div class="form-field"><label>无料类型</label>
+            <select id="postFreeType">
+              <option value="give">免费赠送</option>
+              <option value="swap">互换</option>
+              <option value="want">求物</option>
+            </select>
+          </div>
+          <div class="form-field"><label>物品描述</label><input id="postItem" placeholder="例：SEVENTEEN 小卡 3 张（2026 巡演限定）"></div>
+          <div class="form-field"><label>互换地点 / 时间</label><input id="postWhere" placeholder="例：首尔场 D1 开场前 2 小时，6 号门外"></div>
+        </div>
+
+        <div id="fieldGoods" style="display:none">
+          <div class="form-field"><label>转出 / 收买</label>
+            <select id="postDeal">
+              <option value="sell">转出</option>
+              <option value="buy">收买</option>
+            </select>
+          </div>
+          <div class="form-field"><label>价格（新台币，收买可填预算）</label><input id="postPrice" type="number" min="0" placeholder="例：350"></div>
+          <div class="form-field"><label>品相 / 交易方式</label>
+            <select id="postCond">
+              <option>全新未拆</option><option>九成新</option><option>有使用痕迹</option><option>仅面交</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field"><label>详细内容</label><textarea id="postText" placeholder="请描述可核实的信息，不要填写个人联系方式"></textarea></div>
+        <div class="form-field"><label>你的昵称</label><input id="postAuthor" placeholder="匿名粉丝"></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('postModal')">取消</button>
+        <button type="submit" class="btn btn-primary" style="flex:2">提交</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="adminReviewModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head"><h3>管理员审核</h3><button class="modal-close" onclick="handleAdminReview(false)">×</button></div>
+    <div class="modal-body">
+      <div style="padding:14px;border-radius:14px;background:var(--surface-soft);margin-bottom:14px">
+        <b id="reviewTitle" style="font-size:14px;color:var(--text);display:block;margin-bottom:6px"></b>
+        <p id="reviewBody" style="font-size:12.5px;line-height:1.7"></p>
+        <p id="reviewMeta" style="font-size:11.5px;color:var(--text-3);margin-top:8px"></p>
+      </div>
+      <p style="font-size:12px;color:var(--text-3)">通过后会立即出现在「粉丝团与互助」对应分区（情报还会上图）。</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="handleAdminReview(false)">驳回</button>
+      <button class="btn btn-primary" onclick="handleAdminReview(true)">通过</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="fanclubChannelModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="channelTitle" style="display:flex;align-items:center;gap:10px;font-size:15px"></h3>
+      <button class="modal-close" onclick="closeModal('fanclubChannelModal')">×</button>
+    </div>
+    <div class="modal-body" id="channelBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="contactModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-head"><h3 id="contactTitle">联系申请</h3><button class="modal-close" onclick="closeModal('contactModal')">×</button></div>
+    <form onsubmit="submitContactForm(event)">
+      <div class="modal-body">
+        <div class="contact-post" id="contactPost"></div>
+        <div class="form-field"><label>给对方的消息</label>
+          <textarea id="contactMsg" placeholder="说明你想要什么、大概什么时候方便面交"></textarea>
+        </div>
+        <div class="contact-warn">
+          <b>先用站内沟通：</b>双方同意后才会显示联系方式；不要提前转账、不要发送证件照片或验证码。
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('contactModal')">取消</button>
+        <button type="submit" class="btn btn-primary" style="flex:2">发送申请</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="threadModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-head"><h3 id="threadTitle" style="font-size:14.5px"></h3><button class="modal-close" onclick="closeModal('threadModal')">×</button></div>
+    <div class="modal-body" id="threadBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="msgModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head"><h3>收件箱</h3><button class="modal-close" onclick="closeModal('msgModal')">×</button></div>
+    <div class="modal-body">
+      <div class="th-list" id="threadList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="reviewModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-head"><h3>评价这笔交易</h3><button class="modal-close" onclick="closeModal('reviewModal')">×</button></div>
+    <form onsubmit="submitReviewForm(event)">
+      <div class="modal-body">
+        <div class="cr-head" id="reviewWho"></div>
+        <div class="review-stars" id="reviewStars">
+          <button type="button" onclick="pickReviewStar(1)">★</button>
+          <button type="button" onclick="pickReviewStar(2)">★</button>
+          <button type="button" onclick="pickReviewStar(3)">★</button>
+          <button type="button" onclick="pickReviewStar(4)">★</button>
+          <button type="button" onclick="pickReviewStar(5)">★</button>
+        </div>
+        <div class="form-field"><label>评价内容（选填）</label>
+          <textarea id="reviewText" placeholder="面交是否准时、物品是否与描述一致…"></textarea>
+        </div>
+        <div class="contact-warn"><b>提醒：</b>只评价真实完成的交易；恶意差评会被记录。</div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('reviewModal')">稍后</button>
+        <button type="submit" class="btn btn-primary" style="flex:2">提交评价</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="creditModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-head"><h3 class="cr-head" id="creditName" style="font-size:15px"></h3><button class="modal-close" onclick="closeModal('creditModal')">×</button></div>
+    <div class="modal-body" id="creditBody"></div>
+  </div>
+</div>
+
+
+<div class="overlay" id="qrModal">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <div class="modal-head"><h3>现场领取码 · 核对</h3><button class="modal-close" onclick="closeModal('qrModal')">×</button></div>
+    <div class="modal-body" id="qrModalBody" style="padding:22px 20px"></div>
+  </div>
+</div>
+<div class="overlay" id="scanModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head"><h3>扫一扫核销领取码</h3><button class="modal-close" onclick="closeModal('scanModal')">×</button></div>
+    <div class="modal-body" id="scanModalBody"></div>
+  </div>
+</div>
+<div class="overlay" id="reportModal">
+  <div class="modal">
+    <div class="modal-head"><h3>安全提示与举报</h3><button class="modal-close" onclick="closeModal('reportModal')">×</button></div>
+    <form onsubmit="submitReportForm(event)">
+      <div class="modal-body">
+        <div style="background:#fff4e8;border-radius:12px;padding:13px 15px;font-size:12.5px;color:#8a5a12;line-height:1.7;margin-bottom:16px">
+          <b>记住这几点：</b>没有主办方会私信索要押金、代抢费用、身份证照片，也不会要求加私人微信转账。遇到请直接举报。
+        </div>
+        <div class="form-field"><label>被举报用户（选填，核实后将自动扣减信用分）</label>
+          <select id="reportTarget"><option value="">不指定具体用户</option></select>
+        </div>
+        <div class="form-field"><label>问题类型</label>
+          <select id="reportType">
+            <option>假票 / 黄牛高价票</option>
+            <option>虚假行程信息</option>
+            <option>押金 / 代抢诈骗</option>
+            <option>骚扰 / 隐私泄露</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="form-field"><label>相关链接或描述</label><textarea id="reportText" placeholder="请描述发生了什么" required></textarea></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('reportModal')">取消</button>
+        <button type="submit" class="btn btn-primary" style="flex:2">提交举报</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toastBox"></div>
+<div class="scrim" id="scrim" onclick="toggleSidebar(false)"></div>
+
+<nav class="tabbar">
+  <div class="tabbar-in">
+    <button class="active" data-tab="discover" onclick="switchPage('discover')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>行程
+    </button>
+    <button data-tab="calendar" onclick="switchPage('calendar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>日历
+    </button>
+    <button data-tab="ugc" onclick="switchPage('ugc')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 12a8 8 0 01-8 8H7l-4 3V12a8 8 0 018-8h7"/></svg>互助
+    </button>
+    <button data-tab="profile" onclick="switchPage('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>我的
+    </button>
+  </div>
+</nav>
+
+<script>
+/* =====================================================================
+   核心数据：ChasingDatabase
+   ===================================================================== */
+const PALETTE = ['#7b6ef0','#5fd0b4','#f0a93b','#ef7c8e','#56a8f5','#a97cf0','#48c9a9','#f58f6a'];
+
+function buildTicketUrl(name){ return 'https://www.globalinterpark.com/search?q=' + encodeURIComponent(name); }
+function buildVoteUrl(name){ return 'https://www.mubeat.tv/'; }
+
+/* 活动范围：韩国 / 亚洲 / 全球 */
+window.ChasingDatabase = {
+  stars: [
+    { id:'s1',  name:'IVE',        initials:'IV',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'Starship 娱乐 · Fanclub 数据源',  fanclub:'DIVE',       ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s2',  name:'aespa',      initials:'AE',  color:'#5fd0b4', category:'Kpop', region:'韩国', bio:'SM 娱乐 · Weverse 公告监控',      fanclub:'MY',         ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.idolchamp.co.kr/' },
+    { id:'s3',  name:'BLACKPINK',  initials:'BP',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'YG 娱乐 · 巡演数据源',             fanclub:'BLINK',      ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s4',  name:'TWICE',      initials:'TW',  color:'#f0a93b', category:'Kpop', region:'韩国', bio:'JYP 娱乐 · Fanclub 公告',         fanclub:'ONCE',       ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s5',  name:'SEVENTEEN',  initials:'SV',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'PLEDIS 娱乐 · Weverse 巡演日历',       fanclub:'CARAT',      ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.idolchamp.co.kr/' },
+    { id:'s6',  name:'NewJeans',   initials:'NJ',  color:'#48c9a9', category:'Kpop', region:'韩国', bio:'ADOR · 公告与会员优先购',          fanclub:'Bunnies',    ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s7',  name:'Stray Kids', initials:'SK',  color:'#a97cf0', category:'Kpop', region:'韩国', bio:'JYP 娱乐 · 全球巡演数据',          fanclub:'STAY',       ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.idolchamp.co.kr/' },
+    { id:'s8',  name:'(G)I-DLE',   initials:'ID',  color:'#f58f6a', category:'Kpop', region:'韩国', bio:'CUBE 娱乐 · Fanclub',             fanclub:'NEVERLAND',  ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s9',  name:'ITZY',       initials:'IZ',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'JYP 娱乐 · 行程公告',              fanclub:'MIDZY',      ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s10', name:'LE SSERAFIM',initials:'LS',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'SOURCE MUSIC · Weverse 公告',      fanclub:'FEARNOT',    ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.idolchamp.co.kr/' }
+  ],
+  events: [
+    { id:'e1', star:'aespa', title:'aespa LIVE TOUR — SYNK : PARALLEL LINE', date:'2026-12-03', time:'18:00 · KST', location:'KSPO DOME', scope:'韩国', city:'首尔', category:'Kpop', tags:['演唱会','已官宣'],
+      desc:'已公布首尔场次，实名制入场，需携带护照原件核验。',
+      address:'首尔特别市松坡区奥林匹克路 424', route:['地铁 5/9 号线「奥林匹克公园站」3 号出口，步行 8 分钟','自驾可停 KSPO DOME 东侧停车场，散场拥堵建议改乘地铁','场馆南门为实名核验通道，提前 90 分钟开放'],
+      ticket_url:'https://www.globalinterpark.com/', vote_url:'https://www.idolchamp.co.kr/',
+      guide:{ checklist:['护照原件及复印件','电子票二维码（截图无效，需实时加载）','手灯（尺寸合规）'], security:['场馆不设现场售票','警惕「代抢服务」索要账号密码'] } },
+
+    { id:'e2', star:'IVE', title:'IVE THE 1ST WORLD TOUR — SEOUL ENCORE', date:'2026-11-21', time:'19:00 · KST', location:'高尺天空巨蛋 Gocheok Sky Dome', scope:'韩国', city:'首尔', category:'Kpop', tags:['演唱会','已官宣','实名制'],
+      desc:'Interpark 全球站开卖，全站实名制，票券不可转让。',
+      address:'首尔特别市九老区京仁路 430', route:['地铁 1 号线「九一站」2 号出口，步行 5 分钟','球场外广场设有周边售卖区','散场后可步行至九一站或乘接驳巴士至首尔站'],
+      ticket_url:'https://www.globalinterpark.com/', vote_url:'https://www.mubeat.tv/',
+      guide:{ checklist:['护照 / 外国人登录证原件','入场前 2 小时开放安检'], security:['不购买任何二手转让票','谨防要求私下汇款的票商'] } },
+
+    { id:'e3', star:'BLACKPINK', title:'BLACKPINK WORLD TOUR [DEADLINE] — LOS ANGELES', date:'2027-01-16', time:'20:00 · PST', location:'SoFi Stadium', scope:'全球', city:'洛杉矶', category:'Kpop', tags:['演唱会','已官宣'],
+      desc:'北美场次由 Ticketmaster 开卖，需注册 Verified Fan 才可进入排队。',
+      address:'1001 Stadium Dr, Inglewood, CA 90301, USA', route:['LAX 机场乘车约 25 分钟，建议预留 60 分钟','Metro K Line「Downtown Inglewood」站步行 15 分钟','场馆停车场需提前购买，现场不设临时停车'],
+      ticket_url:'https://www.ticketmaster.com/', vote_url:'https://www.mubeat.tv/',
+      guide:{ checklist:['护照 + 有效美签/ESTA','Verified Fan 邀请码','实体信用卡（现场周边多为无现金）'], security:['不要相信「内部预留票」','场外兜售票多为无效票'] } },
+
+    { id:'e4', star:'TWICE', title:'TWICE WORLD TOUR — TOKYO DOME', date:'2026-10-08', time:'18:30 · JST', location:'东京巨蛋 Tokyo Dome', scope:'亚洲', city:'东京', category:'Kpop', tags:['演唱会','已官宣'],
+      desc:'日本场次通过 Ticket Pia / e+ 抽选，ONCE JAPAN 会员优先。',
+      address:'东京都文京区后乐 1-3-61', route:['JR 中央线「水道桥站」东口步行 3 分钟','地铁三田线「水道桥站」A2 出口最近','散场后水道桥站极度拥堵，可步行至后乐园站分流'],
+      ticket_url:'https://www.globalinterpark.com/', vote_url:'https://www.mubeat.tv/',
+      guide:{ checklist:['ONCE JAPAN 会员凭证','护照原件','日币现金（周边摊位）'], security:['抽选名额不可转让','警惕高价代抽代抢'] } },
+
+    { id:'e5', star:'SEVENTEEN', title:'SEVENTEEN WORLD TOUR — BANGKOK', date:'2026-09-19', time:'18:00 · ICT', location:'Impact Arena Muang Thong Thani', scope:'亚洲', city:'曼谷', category:'Kpop', tags:['演唱会','已官宣'],
+      desc:'东南亚场次公告，需在 Weverse 完成会员验证后购票。',
+      address:'Pak Kret District, Nonthaburi 11120, Thailand', route:['MRT 粉线「Muang Thong Thani」站步行 10 分钟','素万那普机场乘车约 45 分钟','场馆与市区之间建议预留 60 分钟车程'],
+      ticket_url:'https://www.globalinterpark.com/', vote_url:'https://www.idolchamp.co.kr/',
+      guide:{ checklist:['Weverse 会员凭证','护照原件','雨具（雨季）'], security:['会员资格不可转让','现场不设临时售票窗口'] } },
+
+    { id:'e6', star:'NewJeans', title:'NewJeans FAN MEETING — INCHEON', date:'2026-12-20', time:'17:00 · KST', location:'Inspire Arena', scope:'韩国', city:'仁川', category:'Kpop', tags:['粉丝见面会','已官宣'],
+      desc:'仁川 Inspire Arena 粉丝见面会，会员优先购票，全场对号入座。',
+      address:'仁川广域市中区机场文化路 127', route:['仁川机场 1 号航站楼乘免费接驳车约 15 分钟','地铁机场铁路「仁川机场货物厅站」转乘接驳巴士','演出当日接驳车运行至散场后 60 分钟'],
+      ticket_url:'https://www.globalinterpark.com/', vote_url:'https://www.mubeat.tv/',
+      guide:{ checklist:['护照原件','会员 QR 码','手灯'], security:['不接收任何「代排」服务','谨防假冒会员门票'] } },
+
+    { id:'e7', star:'Stray Kids', title:'Stray Kids WORLD TOUR — SINGAPORE', date:'2027-02-06', time:'19:00 · SGT', location:'National Stadium · 新加坡', scope:'全球', city:'新加坡', category:'Kpop', tags:['演唱会','已官宣'],
+      desc:'新加坡国家体育场场次，Ticketmaster SG 开卖，全场实名。',
+      address:'1 Stadium Dr, Singapore 397629', route:['地铁环线「Stadium」站 A 出口步行 5 分钟','樟宜机场乘车约 20 分钟','散场后人流管制，建议预留 30 分钟离场'],
+      ticket_url:'https://www.ticketmaster.sg/', vote_url:'https://www.idolchamp.co.kr/',
+      guide:{ checklist:['护照原件','电子票实时加载','轻便雨具'], security:['场外「加价票」多为无效票','不要向陌生人提供证件照片'] } },
+
+    { id:'e8', star:'(G)I-DLE', title:'(G)I-DLE WORLD TOUR — KUALA LUMPUR', date:'2026-11-07', time:'20:00 · MYT', location:'Axiata Arena', scope:'亚洲', city:'吉隆坡', category:'Kpop', tags:['演唱会','已官宣'],
+      desc:'马来西亚场次公告，NEVERLAND 会员优先购票。',
+      address:'Bukit Jalil, 57000 Kuala Lumpur, Malaysia', route:['LRT 大城堡线「Bukit Jalil」站步行 12 分钟','KLIA 机场乘车约 45 分钟','体育馆外设有接驳车至市区'],
+      ticket_url:'https://www.globalinterpark.com/', vote_url:'https://www.mubeat.tv/',
+      guide:{ checklist:['护照原件','会员凭证','现金（现场部分摊位）'], security:['勿向陌生人转账购票','留意假周边与假票'] } }
+  ],
+  votes: [
+    { id:'v1', star:'IVE',       name:'Mubeat 全球人气投票',      note:'每周更新 · 应援投票入口', pct:72, url:'https://www.mubeat.tv/' },
+    { id:'v2', star:'aespa',     name:'IDOL CHAMP 应援投票',      note:'需完成会员验证后参与',       pct:58, url:'https://www.idolchamp.co.kr/' },
+    { id:'v3', star:'TWICE',     name:'Mubeat 周榜投票',          note:'ONCE 每日签到可加分',        pct:44, url:'https://www.mubeat.tv/' },
+    { id:'v4', star:'SEVENTEEN', name:'IDOL CHAMP 月度投票',      note:'CARAT 应援入口',         pct:36, url:'https://www.idolchamp.co.kr/' }
+  ],
+  fanclubs: [
+    { id:'f1', star:'IVE',        name:'DIVE 粉丝团',    platform:'Weverse', members:128400, posts:312, note:'小卡互换、生日应援物料集中发布', url:'https://weverse.io/' },
+    { id:'f2', star:'aespa',      name:'MY 粉丝团',      platform:'Weverse', members:98200,  posts:207, note:'首尔场集合点与无料发放安排',     url:'https://weverse.io/' },
+    { id:'f3', star:'TWICE',      name:'ONCE JAPAN',     platform:'Fanclub', members:243600, posts:518, note:'东京巨蛋抽选与周边转出信息',     url:'https://www.twicejapan.com/' },
+    { id:'f4', star:'SEVENTEEN',  name:'CARAT 粉丝团',   platform:'Weverse', members:187300, posts:466, note:'巡演小卡互换、应援手幅定制',     url:'https://weverse.io/' },
+    { id:'f5', star:'Stray Kids', name:'STAY 粉丝团',    platform:'Fanclub', members:154900, posts:389, note:'海外场次接驳情报与拼场无料',     url:'https://www.straykidsjapan.com/' },
+    { id:'f6', star:'NewJeans',   name:'Bunnies 粉丝团', platform:'Weverse', members:76300,  posts:178, note:'会员验证与优先购票提醒',         url:'https://weverse.io/' }
+  ],
+  /* 应援无料：give 赠送 / swap 互换 / want 求物 */
+  freebies: [
+    { id:'fb1', star:'IVE',        type:'swap', title:'IVE 首尔场小卡 3 张互换',      item:'2026 巡演限定小卡 ×3', where:'首尔 KSPO DOME 6 号门外', time:'D1 16:00-17:00', author:'DIVE 小柯', status:'open', joiners:12 },
+    { id:'fb2', star:'SEVENTEEN',  type:'give', title:'多余手幅免费送',              item:'「FML」应援手幅 ×20（现场派发）', where:'首尔场 B 区入口', time:'开场前 1 小时', author:'CARAT 阿鹿', status:'open', joiners:34 },
+    { id:'fb3', star:'aespa',      type:'want', title:'求一张泰籍 MY 限定贴纸',      item:'曼谷场限定贴纸',              where:'曼谷 Impact Arena 周边区', time:'D 日全天', author:'MY 阿秋', status:'open', joiners:5 },
+    { id:'fb4', star:'NewJeans',   type:'give', title:'Bunnies 生日徽章派发',        item:'手工徽章 ×30',                where:'仁川 Inspire Arena 东门', time:'16:00 起', author:'Bunnies 水水', status:'open', joiners:41 },
+    { id:'fb5', star:'TWICE',      type:'swap', title:'东京场小卡互换（换 Sana）',   item:'交换：我有 Momo / 想换 Sana',  where:'东京巨蛋 22 号门', time:'D1 开场前', author:'ONCE 小林', status:'open', joiners:9 }
+  ],
+  /* 周边转出 / 收买：sell 转出 / buy 收买 */
+  goods: [
+    { id:'gd1', star:'SEVENTEEN', deal:'sell', title:'[FML] 专辑（含小卡）全新未拆', price:520,  cond:'全新未拆', where:'首尔 · 面交优先', author:'CARAT 阿鹿', icon:'💿', status:'open' },
+    { id:'gd2', star:'IVE',       deal:'sell', title:'官方手灯 ver.2（用过两次）',   price:780,  cond:'九成新',   where:'首尔 / 仁川面交', author:'DIVE 小柯', icon:'🪄', status:'open' },
+    { id:'gd3', star:'aespa',     deal:'buy',  title:'收 aespa 应援棒 + 官方围巾',   price:900,  cond:'九成新以上', where:'首尔面交',      author:'MY 阿秋', icon:'🧣', status:'open' },
+    { id:'gd4', star:'TWICE',     deal:'sell', title:'东京场限定 T 恤（M 码）',       price:690,  cond:'全新未拆', where:'东京面交',      author:'ONCE 小林', icon:'👕', status:'open' },
+    { id:'gd5', star:'Stray Kids',deal:'buy',  title:'收 SKZOO 玩偶（Wolf Chan）',   price:1200, cond:'全新',     where:'新加坡面交',    author:'STAY 阿宏', icon:'🧸', status:'open' }
+  ],
+  /* 用户与信用分（出物 / 交换的评价记录） */
+  users: {
+    '我吧':   { nick:'我吧',   credit:4.8, deals:12, likes:38, joined:'2025-11-02', avatar:'我' },
+    'CARAT 阿鹿': { nick:'CARAT 阿鹿', credit:4.9, deals:26, likes:74, joined:'2025-03-18', avatar:'C' },
+    'DIVE 小柯':  { nick:'DIVE 小柯',  credit:4.6, deals:9,  likes:21, joined:'2026-01-09', avatar:'D' },
+    'MY 阿秋':    { nick:'MY 阿秋',    credit:4.4, deals:5,  likes:12, joined:'2026-02-21', avatar:'M' },
+    'ONCE 小林':  { nick:'ONCE 小林',  credit:5.0, deals:31, likes:96, joined:'2024-12-04', avatar:'O' },
+    'STAY 阿宏':  { nick:'STAY 阿宏',  credit:4.7, deals:17, likes:44, joined:'2025-08-30', avatar:'S' }
+  },
+  reviews: [
+    { id:'rv1', from:'我吧', to:'ONCE 小林', stars:5, postTitle:'东京场限定 T 恤（M 码）', text:'面交准时，衣服和描述一致，包装也很用心。', at:'2026-06-21' },
+    { id:'rv2', from:'CARAT 阿鹿', to:'我吧', stars:5, postTitle:'[FML] 专辑（含小卡）', text:'沟通很顺，现场直接验货，推荐。',           at:'2026-06-14' },
+    { id:'rv3', from:'我吧', to:'DIVE 小柯', stars:4, postTitle:'IVE 首尔场小卡互换',     text:'小卡有点小折痕，但提前说清楚了，可以接受。', at:'2026-06-02' }
+  ],
+  /* 站内联系申请（私信） */
+  threads: [
+    { id:'t1', postKind:'goods', postId:'gd1', postTitle:'[FML] 专辑（含小卡）全新未拆',
+      postAuthor:'CARAT 阿鹿', from:'我', to:'CARAT 阿鹿', status:'accepted', mine:true,
+      msg:'你好，这张 FML 专辑还在吗？想在首尔站面交。', reply:'在的，周六下午 2 点首尔站 2 号出口可以吗？',
+      createdAt:'2026-07-01T12:20:00' },
+    { id:'t2', postKind:'free', postId:'fb1', postTitle:'IVE 首尔场小卡 3 张互换',
+      postAuthor:'DIVE 小柯', from:'我', to:'DIVE 小柯', status:'pending', mine:true,
+      msg:'我有 Rei 的小卡，想换一张 Liz 的可以吗？', reply:'',
+      createdAt:'2026-07-02T09:05:00' }
+  ],
+  ugc: [
+    { id:'u1', star:'IVE',        title:'高尺天空巨蛋 B 区入口排队动线', venue:'高尺天空巨蛋 Gocheok Sky Dome', body:'B 区建议从九一站 2 号出口方向进入，人少、安检快，现场指示牌会在开场前 2 小时更新。', author:'匿名粉丝', approved:true, x:76, y:26 },
+    { id:'u2', star:'aespa',      title:'KSPO DOME 安检口最省时通道',     venue:'KSPO DOME',                    body:'南侧 3 号安检口队伍最短，开场前 90 分钟开始放行，须携带护照原件。',            author:'MY 神',    approved:true, x:38, y:44 },
+    { id:'u3', star:'Stray Kids', title:'新加坡国家体育场散场接驳点',      venue:'National Stadium · 新加坡',     body:'散场后往 Stadium 地铁站人流管制，可从西侧 6 号门步行至 Mountbatten 站分流。',   author:'STAY 阿宏', approved:true, x:62, y:62 }
+  ]
+};
+
+const SCRAPE_POOL = [
+  { name:'ENHYPEN',              initials:'EH',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'BELIFT LAB · Weverse 公告', fanclub:'ENGENE' },
+  { name:'TOMORROW X TOGETHER',  initials:'TXT', color:'#5fd0b4', category:'Kpop', region:'韩国', bio:'HYBE · 巡演数据源',        fanclub:'MOA' },
+  { name:'ATEEZ',                initials:'AT',  color:'#f0a93b', category:'Kpop', region:'韩国', bio:'KQ 娱乐 · Fanclub',        fanclub:'ATINY' },
+  { name:'NMIXX',                initials:'NX',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'JYP 娱乐 · 公告',           fanclub:'NSWER' },
+  { name:'NCT 127',              initials:'NC',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'SM 娱乐 · 巡演公告',        fanclub:'NCTzen' },
+  { name:'EXO',                  initials:'EX',  color:'#a97cf0', category:'Kpop', region:'韩国', bio:'SM 娱乐 · Fanclub',        fanclub:'EXO-L' },
+  { name:'BABYMONSTER',          initials:'BM',  color:'#48c9a9', category:'Kpop', region:'韩国', bio:'YG 娱乐 · 公告',            fanclub:'MONSTIEZ' },
+  { name:'RIIZE',                initials:'RZ',  color:'#f58f6a', category:'Kpop', region:'韩国', bio:'SM 娱乐 · 数据源',          fanclub:'BRIIZE' },
+  { name:'Kep1er',               initials:'KP',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'WAKEONE · Fanclub',        fanclub:'Kep1ian' },
+  { name:'ZEROBASEONE',          initials:'ZB',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'WAKEONE · 公告',            fanclub:'ZEROSE' },
+  { name:'TREASURE',             initials:'TR',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'YG 娱乐 · 巡演',            fanclub:'TREASURE MAKER' },
+  { name:'Girls Generation',     initials:'SNSD',color:'#a97cf0', category:'Kpop', region:'韩国', bio:'SM 娱乐 · Fanclub',        fanclub:'S♡NE' },
+  { name:'Red Velvet',           initials:'RV',  color:'#f58f6a', category:'Kpop', region:'韩国', bio:'SM 娱乐 · 公告',            fanclub:'ReVeluv' },
+  { name:'BOYNEXTDOOR',          initials:'BD',  color:'#48c9a9', category:'Kpop', region:'韩国', bio:'KOZ 娱乐 · Weverse 公告',       fanclub:'ONEDOOR' },
+  { name:'ILLIT',                initials:'IL',  color:'#5fd0b4', category:'Kpop', region:'韩国', bio:'BELIFT LAB · 公告',         fanclub:'GLLIT' },
+  { name:'P1Harmony',            initials:'PH',  color:'#f0a93b', category:'Kpop', region:'韩国', bio:'FNC 娱乐 · Fanclub',       fanclub:'P1ece' },
+  { name:'THE BOYZ',             initials:'TB',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'ONE HUNDRED · 公告',        fanclub:'THE B' },
+  { name:'CRAVITY',              initials:'CV',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'Starship 娱乐 · 公告',      fanclub:'LUVITY' }
+];
+
+const VENUES = [
+  { name:'KSPO DOME', scope:'韩国', city:'首尔' },
+  { name:'高尺天空巨蛋 Gocheok Sky Dome', scope:'韩国', city:'首尔' },
+  { name:'Inspire Arena', scope:'韩国', city:'仁川' },
+  { name:'首尔 Olympic Hall', scope:'韩国', city:'首尔' },
+  { name:'釜山 BEXCO 会展中心', scope:'韩国', city:'釜山' },
+  { name:'东京巨蛋 Tokyo Dome', scope:'亚洲', city:'东京' },
+  { name:'Impact Arena Muang Thong Thani', scope:'亚洲', city:'曼谷' },
+  { name:'Axiata Arena', scope:'亚洲', city:'吉隆坡' },
+  { name:'National Stadium · 新加坡', scope:'全球', city:'新加坡' },
+  { name:'SoFi Stadium', scope:'全球', city:'洛杉矶' },
+  { name:'O2 Arena', scope:'全球', city:'伦敦' },
+  { name:'Paris La Défense Arena', scope:'全球', city:'巴黎' }
+];
+const TITLES = ['LIVE TOUR', 'WORLD TOUR ENCORE', 'FAN MEETING', 'ANNIVERSARY CONCERT', 'THE STAGE'];
+
+/* ================= 场馆经纬度（Google Maps） ================= */
+const VENUE_GEO = {
+  'KSPO DOME':                         { lat:37.5171, lng:127.0736 },
+  '高尺天空巨蛋 Gocheok Sky Dome':      { lat:37.4982, lng:126.8673 },
+  'Inspire Arena':                     { lat:37.4289, lng:126.6744 },
+  '首尔 Olympic Hall':                  { lat:37.5198, lng:127.1215 },
+  '釜山 BEXCO 会展中心':                { lat:35.1690, lng:129.1310 },
+  '东京巨蛋 Tokyo Dome':                { lat:35.7056, lng:139.7519 },
+  'Impact Arena Muang Thong Thani':    { lat:13.9130, lng:100.5480 },
+  'Axiata Arena':                      { lat:3.0540,  lng:101.6920 },
+  'National Stadium · 新加坡':          { lat:1.3048,  lng:103.8742 },
+  'SoFi Stadium':                      { lat:33.9535, lng:-118.3392 },
+  'O2 Arena':                          { lat:51.5030, lng:0.0032 },
+  'Paris La Défense Arena':             { lat:48.8956, lng:2.2297 }
+};
+const VENUE_GEO_ALIAS = [
+  ['高尺', '高尺天空巨蛋 Gocheok Sky Dome'], ['KSPO', 'KSPO DOME'], ['蚕室', 'KSPO DOME'],
+  ['Inspire', 'Inspire Arena'], ['仁川', 'Inspire Arena'], ['Olympic Hall', '首尔 Olympic Hall'],
+  ['BEXCO', '釜山 BEXCO 会展中心'], ['釜山', '釜山 BEXCO 会展中心'],
+  ['东京', '东京巨蛋 Tokyo Dome'], ['東京', '东京巨蛋 Tokyo Dome'], ['Tokyo', '东京巨蛋 Tokyo Dome'],
+  ['Impact', 'Impact Arena Muang Thong Thani'], ['曼谷', 'Impact Arena Muang Thong Thani'],
+  ['Axiata', 'Axiata Arena'], ['吉隆坡', 'Axiata Arena'],
+  ['National Stadium', 'National Stadium · 新加坡'], ['新加坡', 'National Stadium · 新加坡'],
+  ['SoFi', 'SoFi Stadium'], ['洛杉矶', 'SoFi Stadium'],
+  ['O2', 'O2 Arena'], ['伦敦', 'O2 Arena'],
+  ['Défense', 'Paris La Défense Arena'], ['巴黎', 'Paris La Défense Arena']
+];
+function venueGeo(name){
+  if(name){
+    if(VENUE_GEO[name]) return VENUE_GEO[name];
+    const alias = VENUE_GEO_ALIAS.find(([k]) => name.includes(k));
+    if(alias) return VENUE_GEO[alias[1]];
+    const key = Object.keys(VENUE_GEO).find(k => k.includes(name) || name.includes(k));
+    if(key) return VENUE_GEO[key];
+  }
+  return VENUE_GEO['KSPO DOME'];
+}
+/* =========================================================
+   Google Maps Key
+   ---------------------------------------------------------
+   想用「自定义标记 / 深色地图 / 路线绘制」：在这里填入你的 Key。
+   留空则自动使用免 Key 的 iframe 模式（当前已经在用），功能完全可用。
+   两种 Key 都支持：
+     · Maps Embed API Key      → 只嵌入地图（推荐，成本最低）
+     · Maps JavaScript API Key → 更高级的自定义
+   ========================================================= */
+const GMAPS_KEY = '';        /* ← 把你的 Key 填在这两个引号中间 */
+const GMAPS_MODE = 'embed';  /* 'embed' = iframe 模式；'js' = JavaScript API 模式 */
+
+function gmEmbed(lat, lng, zoom){
+  const z = zoom || 15;
+  return GMAPS_KEY
+    ? `https://www.google.com/maps/embed/v1/place?key=${GMAPS_KEY}&q=${lat},${lng}&zoom=${z}&language=zh-TW`
+    : `https://maps.google.com/maps?q=${lat},${lng}&hl=zh-TW&z=${z}&output=embed`;
+}
+function gmLink(lat, lng){ return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`; }
+function gmDir(lat, lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
+function mapFrame(lat, lng, label, zoom, height){
+  const h = height || 180;
+  return `<div class="gm-wrap" style="height:${h}px">
+    <div class="gm-fallback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 20l-5.5 2V6L9 4m0 16l6-2m-6 2V4m6 14l5.5 2V6L15 4m0 14V4M9 4l6-2"/></svg>
+      <span>地图需要联网加载</span>
+      <a href="${gmLink(lat,lng)}" target="_blank" rel="noopener">在 Google 地图打开 ↗</a>
+    </div>
+    <iframe class="gm-frame" src="${gmEmbed(lat,lng,zoom)}" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    ${label ? `<span class="gm-tag">${label}</span>` : ''}
+    <span class="gm-key">${GMAPS_KEY ? 'Google Maps · 已启用 Key' : 'Google Maps · 免 Key 模式'}</span>
+  </div>`;
+}
+
+/* 状态 */
+const state = { onlyNear:false, filterStar:'', pendingUGCItem:null, reviewStar:'', scrapeCount:0, themeMode:'light',
+  ugcTab:'info', freeFilter:'', goodsFilter:'', joinedFanclubs:[] };
+
+/* ---------- utils ---------- */
+function fmtDate(d){
+  const p = d.split('-');
+  return `${p[0]}年${Number(p[1])}月${Number(p[2])}日`;
+}
+function monthDay(d){ const p=d.split('-'); return { day:Number(p[2]), month:Number(p[1]) }; }
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function toast(msg){
+  const box = document.getElementById('toastBox');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(10px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 2600);
+}
+function openModal(id, silent){
+  document.getElementById(id).classList.add('show');
+  if(document.body.style.overflow !== 'hidden') document.body.dataset.prevOverflow = document.body.style.overflow || '';
+  document.body.style.overflow = 'hidden';
+  if(id === 'scraperModal') renderTerminalPlaceholder();
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+  if(!document.querySelector('.overlay.show')) document.body.style.overflow = document.body.dataset.prevOverflow || '';
+}
+
+/* ---------- 页面切换 ---------- */
+const PAGE_TITLES = { discover:'发现行程', calendar:'行程日历', vote:'公告 · 票务 · 投票', ugc:'粉丝团 · 互助', profile:'设置与账户信息' };
+function switchPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.page===page));
+  document.querySelectorAll('.tabbar button').forEach(n=>n.classList.toggle('active', n.dataset.tab===page));
+  document.getElementById('crumbNow').textContent = PAGE_TITLES[page] || '';
+  toggleSidebar(false);
+  if(page === 'calendar') renderCalendar();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+function toggleSidebar(open){
+  document.getElementById('sidebar').classList.toggle('open', !!open);
+  document.getElementById('scrim').classList.toggle('show', !!open);
+}
+function toggleSwitch(el){ el.classList.toggle('on'); }
+
+/* ---------- 侧边栏明星 ---------- */
+function renderStars(){
+  document.getElementById('starCountLabel').textContent = ChasingDatabase.stars.length;
+  const list = document.getElementById('starList');
+  list.innerHTML = ChasingDatabase.stars.map(s => `
+    <button class="star-row ${state.filterStar===s.name?'active':''}" onclick="pickStar('${s.name.replace(/'/g,"\\'")}')">
+      <span class="avatar" style="background:${s.color}">${s.initials}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</span>
+    </button>`).join('');
+}
+function pickStar(name){
+  state.filterStar = (state.filterStar === name) ? '' : name;
+  document.getElementById('filterStar').value = state.filterStar;
+  renderStars(); renderChips(); renderEvents();
+  switchPage('discover');
+}
+
+/* ---------- 顶部艺人 chips ---------- */
+function renderChips(){
+  const box = document.getElementById('starChips');
+  const list = ChasingDatabase.stars.slice(0, 4);
+  let html = `<button class="chip plain ${state.filterStar===''?'on':''}" onclick="clearStarFilter()">全部</button>`;
+  html += list.map(s => `<button class="chip ${state.filterStar===s.name?'on':''}" onclick="pickStar('${s.name.replace(/'/g,"\\'")}')">
+      <span class="avatar" style="background:${s.color}">${s.initials}</span>${s.name}</button>`).join('');
+  if(ChasingDatabase.stars.length > 4){
+    html += `<button class="chip plain dashed" onclick="toast('侧边栏可查看全部 ${ChasingDatabase.stars.length} 位关注艺人')">+ 更多</button>`;
+  }
+  box.innerHTML = html;
+}
+function clearStarFilter(){ state.filterStar=''; document.getElementById('filterStar').value=''; renderStars(); renderChips(); renderEvents(); }
+
+/* ---------- 筛选下拉 ---------- */
+function renderFilterOptions(){
+  const sel = document.getElementById('filterStar');
+  const cur = state.filterStar;
+  sel.innerHTML = `<option value="">全部艺人</option>` + ChasingDatabase.stars.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+  sel.value = cur;
+}
+
+/* ---------- 行程列表 ---------- */
+function toggleOnlyNear(){
+  state.onlyNear = !state.onlyNear;
+  document.getElementById('onlyNearBtn').classList.toggle('on', state.onlyNear);
+  renderEvents();
+}
+function renderEvents(){
+  const kw = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+  const scope = document.getElementById('filterScope')?.value || '';
+  const starSel = document.getElementById('filterStar')?.value || '';
+  if(starSel !== state.filterStar) state.filterStar = starSel;
+
+  let list = ChasingDatabase.events.slice().sort((a,b)=> a.date.localeCompare(b.date));
+  if(state.filterStar) list = list.filter(e => e.star === state.filterStar);
+  if(scope) list = list.filter(e => (e.scope || e.region) === scope);
+  if(kw) list = list.filter(e => (e.title+e.star+e.location).toLowerCase().includes(kw));
+  if(state.onlyNear){
+    const now = new Date(); const limit = new Date(now.getTime() + 60*86400000);
+    list = list.filter(e => { const d = new Date(e.date); return d >= new Date(now.getFullYear(),now.getMonth(),now.getDate()-30) && d <= limit; });
+  }
+
+  document.getElementById('statEvents').textContent = list.length;
+  document.getElementById('statFollow').textContent = ChasingDatabase.stars.length;
+  document.getElementById('statSync').textContent = `${ChasingDatabase.events.length}/${ChasingDatabase.stars.length + ChasingDatabase.events.length}`;
+
+  const wrap = document.getElementById('eventList');
+  if(!list.length){
+    wrap.innerHTML = `<div class="panel"><div class="empty">没有符合条件的行程，试试「开启 AI 爬蟲同步」拉取更多数据。</div></div>`;
+    return;
+  }
+  wrap.innerHTML = list.map(ev => {
+    const star = ChasingDatabase.stars.find(s => s.name === ev.star) || { color:'#7b6ef0', initials:'CH', bio:'' };
+    const md = monthDay(ev.date);
+    const tags = (ev.tags||[]).map((t,i)=>`<span class="tag ${i===1?'green':'purple'}">${t}</span>`).join('');
+    return `<article class="ev">
+      <div class="ev-top">
+        <span class="avatar lg" style="background:${star.color}">${star.initials}</span>
+        <div class="ev-meta">
+          <span class="name">${ev.star}</span>
+          <span class="time">${ev.date.replace(/-/g,'.')} · ${ev.time}</span>
+        </div>
+        <div class="ev-date"><b>${md.day}</b><span>${md.month} 月</span></div>
+      </div>
+      <h3 onclick="openDetail('${ev.id}')">${ev.title}</h3>
+      <div class="tags">${tags}<span class="tag">${ev.scope || ev.region || '全球'}</span></div>
+      <div class="ev-place">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        ${ev.location}
+        ${(()=>{ const n = livePostsForEvent(ev).length; return n ? `<span class="ev-live" onclick="event.stopPropagation();openDetail('${ev.id}')">🎁 无料 ${n}</span>` : ''; })()}
+      </div>
+      <div class="ev-actions">
+        <button class="btn btn-primary" onclick="openDetail('${ev.id}')">查看攻略</button>
+        <a class="btn btn-ghost" href="${ev.ticket_url}" target="_blank" rel="noopener">票务原页
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+        <button class="btn btn-ghost" onclick="toast('已收藏并设置开票提醒')">收藏提醒</button>
+      </div>
+      <div class="ev-foot">
+        人工核实来源 · 核对于 ${ev.date.replace(/-/g,'/')}
+        <button class="report" onclick="openReportModal()">报错/纠错</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* 某场行程相关的粉丝内容（同艺人 + 同场馆，按时间就近） */
+function livePostsForEvent(ev){
+  if(!ev) return [];
+  const day = new Date(ev.date).getTime();
+  const near = (t) => Math.abs(t - day) <= 86400000 * 21; // 前后 3 周
+  const free = (ChasingDatabase.freebies||[]).filter(x => x.approved !== false && (x.star === ev.star) &&
+      (x.where||'').includes(String(ev.location).split(' ')[0]) && near(new Date(x.postedAt||ev.date).getTime()));
+  const goods = (ChasingDatabase.goods||[]).filter(x => x.approved !== false && (x.star === ev.star) &&
+      (x.where||'').includes(String(ev.location).split(' ')[0]) && near(new Date(x.postedAt||ev.date).getTime()));
+  if(free.length || goods.length) return free.map(x=>({...x, kind:'free'})).concat(goods.map(x=>({...x, kind:'goods'})));
+  // 场馆没写清楚时，退回按艺人匹配
+  return free.concat(goods).length ? free.concat(goods).map(x=>({...x, kind:'free'}))
+    : (ChasingDatabase.freebies||[]).filter(x=>x.star===ev.star).map(x=>({...x, kind:'free'}))
+        .concat((ChasingDatabase.goods||[]).filter(x=>x.star===ev.star).map(x=>({...x, kind:'goods'}))).slice(0,4);
+}
+
+/* ---------- 详情弹窗 ---------- */
+function openDetail(id){
+  const ev = ChasingDatabase.events.find(e => e.id === id);
+  if(!ev){ toast('找不到该行程'); return; }
+  const star = ChasingDatabase.stars.find(s => s.name === ev.star) || { color:'#7b6ef0', initials:'CH', bio:'数据来源核对中', fanclub:'粉丝团' };
+  document.getElementById('detailTitle').textContent = '行程详情';
+
+  const chk = (ev.guide?.checklist||[]).map(x=>`<li>${x}</li>`).join('');
+  const sec = (ev.guide?.security||[]).map(x=>`<li>${x}</li>`).join('');
+  const routes = (ev.route||[]).map(x=>`<li>${x}</li>`).join('');
+  const scope = ev.scope || ev.region || '全球';
+  const geo = venueGeo(ev.location);
+  const liveFreebies = livePostsForEvent(ev);
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-star">
+      <span class="avatar lg" style="background:${star.color}">${star.initials}</span>
+      <div><h4>${ev.star}</h4><p>${star.bio || '数据来源核对中'}${star.fanclub ? ' · 粉丝团 ' + star.fanclub : ''}</p></div>
+    </div>
+
+    <div class="detail-title">${ev.title}</div>
+    <div class="kv"><b>时间</b><span>${fmtDate(ev.date)} · ${ev.time}</span></div>
+    <div class="kv"><b>场馆</b><span>${ev.location}${ev.city ? ' · ' + ev.city : ''}</span></div>
+    <div class="kv"><b>活动范围</b><span>${scope}</span></div>
+    <div class="kv"><b>类型</b><span>${(ev.tags||[]).join(' · ')}</span></div>
+
+    <!-- 地图指引（Google Maps） -->
+    <div class="detail-map">
+      ${mapFrame(geo.lat, geo.lng, ev.city ? ev.city + ' · ' + ev.location : ev.location, 15, 176)}
+      <div class="detail-map-foot">
+        <a class="btn btn-ghost" href="${gmLink(geo.lat, geo.lng)}" target="_blank" rel="noopener">在地图中查看 ↗</a>
+        <a class="btn btn-ghost" href="${gmDir(geo.lat, geo.lng)}" target="_blank" rel="noopener">规划路线 ↗</a>
+      </div>
+    </div>
+    ${liveFreebies.length ? `
+      <div class="ev-rel">
+        <div class="ev-rel-head"><b>这场有 ${liveFreebies.length} 个无料 / 周边活动</b><span>由粉丝发布，现场领取</span></div>
+        ${liveFreebies.slice(0,3).map(x=>`<div class="ev-rel-item" onclick="closeModal('detailModal'); switchPage('ugc'); switchUgcTab('${x.kind}')">
+          <span class="ev-rel-dot" style="background:${x.kind==='free'?'#2fbf9b':'#7b6ef0'}"></span>
+          <div><b>${x.title}</b><span>${x.kind==='free' ? freeTypeLabel(x.type) + ' · ' + (x.where||'地点待定') : (x.deal==='sell'?'转出':'收买') + ' · NT$ ' + x.price}</span></div>
+          <span class="ev-rel-go">查看 →</span>
+        </div>`).join('')}
+      </div>` : ''}
+    ${routes ? `<div class="detail-list ok"><h5>到场交通指引</h5><ul>${routes}</ul></div>` : ''}
+
+    <div class="detail-desc"><b style="color:var(--text)">行程说明与防伪提示：</b><br>${ev.desc}</div>
+    ${chk ? `<div class="detail-list ok"><h5>入场必备清单</h5><ul>${chk}</ul></div>` : ''}
+    ${sec ? `<div class="detail-list warn"><h5>安全与防骗提示</h5><ul>${sec}</ul></div>` : ''}
+
+    <div style="display:flex;gap:10px;padding-top:14px;border-top:1px solid var(--border)">
+      <a class="btn btn-primary" style="flex:1" href="${ev.ticket_url}" target="_blank" rel="noopener">前往官方购票页 ↗</a>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('detailModal'); switchPage('ugc'); switchUgcTab('free')">粉丝团 · 无料交换</button>
+    </div>`;
+  openModal('detailModal');
+}
+
+/* ---------- 日历 ---------- */
+let calCursor = new Date(2026, 11, 1);
+function shiftMonth(delta){
+  calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()+delta, 1);
+  renderCalendar();
+}
+function renderCalendar(){
+  const y = calCursor.getFullYear(), m = calCursor.getMonth();
+  document.getElementById('calLabel').textContent = `${y} 年 ${m+1} 月`;
+  const first = new Date(y, m, 1).getDay();
+  const days = new Date(y, m+1, 0).getDate();
+  const evByDay = {};
+  ChasingDatabase.events.forEach(ev => {
+    const d = new Date(ev.date);
+    if(d.getFullYear()===y && d.getMonth()===m) (evByDay[d.getDate()] ||= []).push(ev);
+  });
+  const today = new Date();
+  let html = ['日','一','二','三','四','五','六'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<first;i++) html += `<div class="cal-cell blank"></div>`;
+  for(let d=1; d<=days; d++){
+    const has = !!evByDay[d];
+    const isToday = today.getFullYear()===y && today.getMonth()===m && today.getDate()===d;
+    const lane = has ? evByDay[d][0].star : '';
+    html += `<div class="cal-cell ${has?'has':''} ${isToday?'today':''}" ${has?`onclick="showDayEvents(${d})"`:''}>
+      <span>${d}</span>${has?`<em class="lane">${lane}</em>`:''}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+  const firstDay = Object.keys(evByDay).map(Number).sort((a,b)=>a-b)[0];
+  document.getElementById('calSide').innerHTML = firstDay
+    ? `<div style="font-size:12.5px;color:var(--text-3);margin-top:4px">本月首个行程 · ${m+1} 月 ${firstDay} 日</div>` + evByDay[firstDay].map(ev=>miniCard(ev)).join('')
+    : `<div class="empty">本月暂无行程</div>`;
+}
+function miniCard(ev){
+  const star = ChasingDatabase.stars.find(s=>s.name===ev.star) || { color:'#7b6ef0', initials:'CH' };
+  return `<div class="cal-mini" onclick="openDetail('${ev.id}')">
+    <span class="avatar" style="background:${star.color}">${star.initials}</span>
+    <div style="min-width:0">
+      <b>${ev.star} · ${ev.title}</b>
+      <span>${fmtDate(ev.date)} · ${ev.time} · ${ev.location}</span>
+    </div>
+  </div>`;
+}
+function showDayEvents(day){
+  const y = calCursor.getFullYear(), m = calCursor.getMonth();
+  const list = ChasingDatabase.events.filter(ev => {
+    const d = new Date(ev.date);
+    return d.getFullYear()===y && d.getMonth()===m && d.getDate()===day;
+  });
+  document.getElementById('calSide').innerHTML = `<div style="font-size:12.5px;color:var(--text-3);margin-top:4px">${m+1} 月 ${day} 日 · ${list.length} 个行程</div>` + list.map(miniCard).join('');
+}
+
+/* ---------- 投票 ---------- */
+function renderVotes(){
+  document.getElementById('voteGrid').innerHTML = ChasingDatabase.votes.map(v => {
+    const star = ChasingDatabase.stars.find(s=>s.name===v.star) || { color:'#7b6ef0', initials:'CH' };
+    return `<div class="vote-card">
+      <div class="vote-head">
+        <span class="avatar" style="background:${star.color};width:34px;height:34px;font-size:12px">${star.initials}</span>
+        <div><b>${v.star}</b><span>${v.name}</span></div>
+      </div>
+      <p>${v.note}</p>
+      <div class="bar"><i style="width:${v.pct}%"></i></div>
+      <a class="btn btn-ghost" href="${v.url}" target="_blank" rel="noopener" style="width:100%">前往投票页 ↗
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Fans Club 粉丝团 ---------- */
+function fmtMembers(n){
+  if(typeof n !== 'number') return n;
+  return n >= 10000 ? (n/10000).toFixed(1).replace('.0','') + ' 万人' : n + ' 人';
+}
+function renderFanclubs(){
+  const box = document.getElementById('fanclubGrid');
+  if(!box) return;
+  const list = ChasingDatabase.fanclubs || [];
+  document.getElementById('fanclubCount').textContent = list.length;
+  box.innerHTML = list.length ? list.map(f => {
+    const star = ChasingDatabase.stars.find(s=>s.name===f.star) || { color:'#7b6ef0', initials:'CH' };
+    const joined = state.joinedFanclubs.includes(f.id);
+    return `<div class="fc-card">
+      <div class="fc-top">
+        <span class="avatar" style="background:${star.color};width:32px;height:32px;font-size:11px">${star.initials}</span>
+        <div><b>${f.name}</b><span>${f.star} · ${f.posts} 条互助帖</span></div>
+      </div>
+      <p>${f.note}</p>
+      <div class="fc-foot">
+        <span class="fc-pill">${f.platform}</span>
+        <span style="font-size:11px;color:var(--text-3)">${fmtMembers(f.members)}</span>
+        <button class="fc-join ${joined?'on':''}" onclick="toggleJoinFanclub('${f.id}')">${joined?'已加入':'加入'}</button>
+      </div>
+      <div class="fc-foot" style="margin-top:2px">
+        <button class="fc-channel" onclick="openFanclubChannel('${f.id}')">进入频道 →</button>
+        <a class="fc-link" href="${f.url}" target="_blank" rel="noopener">平台页 ↗</a>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">暂无粉丝团数据，试试「AI 爬虫同步」。</div>`;
+}
+
+function toggleJoinFanclub(id){
+  const i = state.joinedFanclubs.indexOf(id);
+  const f = (ChasingDatabase.fanclubs||[]).find(x=>x.id===id);
+  if(i >= 0){ state.joinedFanclubs.splice(i,1); toast('已退出 ' + (f?f.name:'频道')); }
+  else { state.joinedFanclubs.push(id); toast('已加入 ' + (f?f.name:'频道') + '，可进入频道查看互助帖'); }
+  renderFanclubs();
+}
+
+/* 频道内容：把该艺人的无料 / 周边 / 情报聚合起来 */
+function openFanclubChannel(id){
+  const f = (ChasingDatabase.fanclubs||[]).find(x=>x.id===id);
+  if(!f){ toast('频道数据缺失'); return; }
+  const star = ChasingDatabase.stars.find(s=>s.name===f.star) || { color:'#7b6ef0', initials:'CH' };
+  const free = (ChasingDatabase.freebies||[]).filter(x=>x.star===f.star);
+  const goods = (ChasingDatabase.goods||[]).filter(x=>x.star===f.star);
+  const info = ChasingDatabase.ugc.filter(x=>x.approved && x.star===f.star);
+  const joined = state.joinedFanclubs.includes(f.id);
+
+  const freeHtml = free.length ? free.map(x=>`<div class="ch-item" onclick="closeModal('fanclubChannelModal'); switchUgcTab('free')">
+      <b>${x.title}</b><span>${freeTypeLabel(x.type)} · ${x.where}</span></div>`).join('') : `<div class="ch-empty">暂时没有无料交换帖</div>`;
+  const goodsHtml = goods.length ? goods.map(x=>`<div class="ch-item" onclick="closeModal('fanclubChannelModal'); switchUgcTab('goods')">
+      <b>${x.title}</b><span>${x.deal==='sell'?'转出':'收买'} · NT$ ${x.price} · ${x.where}</span></div>`).join('') : `<div class="ch-empty">暂时没有周边转出 / 收买</div>`;
+  const infoHtml = info.length ? info.map(x=>`<div class="ch-item" onclick="closeModal('fanclubChannelModal'); switchUgcTab('info')">
+      <b>${x.title}</b><span>${x.venue || '场馆情报'}</span></div>`).join('') : `<div class="ch-empty">暂时没有场馆情报</div>`;
+
+  document.getElementById('channelTitle').innerHTML = `
+    <span class="avatar" style="background:${star.color};width:34px;height:34px;font-size:12px">${star.initials}</span>
+    <span>${f.name}<small style="display:block;font-size:11px;font-weight:500;color:var(--text-3);margin-top:2px">${f.star} · ${f.platform} · ${fmtMembers(f.members)}</small></span>`;
+
+  document.getElementById('channelBody').innerHTML = `
+    <div class="ch-note">${f.note}</div>
+    <div class="ch-sec"><h5>无料交换 <span>${free.length}</span></h5>${freeHtml}</div>
+    <div class="ch-sec"><h5>周边转出 / 收买 <span>${goods.length}</span></h5>${goodsHtml}</div>
+    <div class="ch-sec"><h5>场馆情报 <span>${info.length}</span></h5>${infoHtml}</div>
+    <div class="ch-actions">
+      <button class="btn btn-primary" onclick="openPostModal('free')">发布无料</button>
+      <button class="btn btn-ghost" onclick="openPostModal('goods')">发布周边</button>
+      <a class="btn btn-ghost" href="${f.url}" target="_blank" rel="noopener">平台页 ↗</a>
+    </div>
+    <div class="ch-foot">
+      ${joined
+        ? '<span class="badge" style="margin:0">已加入频道</span>'
+        : `<button class="btn btn-ghost" style="width:100%" onclick="toggleJoinFanclub('${f.id}');openFanclubChannel('${f.id}')">加入这个频道</button>`}
+    </div>`;
+  openModal('fanclubChannelModal');
+}
+
+/* ---------- 无料 / 周边 渲染 ---------- */
+function freeTypeLabel(t){ return ({give:'免费赠送', swap:'互换', want:'求物'})[t] || '无料'; }
+function renderFreebies(){
+  const box = document.getElementById('freeGrid');
+  if(!box) return;
+  const filters = document.getElementById('freeFilters');
+  const opts = [['','全部'],['give','免费赠送'],['swap','互换'],['want','求物']];
+  filters.innerHTML = opts.map(([v,l])=>`<button class="${state.freeFilter===v?'on':''}" onclick="setFreeFilter('${v}')">${l}</button>`).join('');
+
+  let list = (ChasingDatabase.freebies||[]).slice();
+  if(state.freeFilter) list = list.filter(x=>x.type===state.freeFilter);
+  document.getElementById('freeCount').textContent =(ChasingDatabase.freebies||[]).length;
+
+  box.innerHTML = list.length ? list.map(x=>{
+    const star = ChasingDatabase.stars.find(s=>s.name===x.star) || { color:'#7b6ef0', initials:'CH' };
+    return `<div class="mk-card">
+      <div class="mk-top">
+        <span class="avatar" style="background:${star.color};width:30px;height:30px;font-size:11px">${star.initials}</span>
+        <div style="min-width:0"><b>${x.title}</b><span>${x.star}</span></div>
+      </div>
+      <span class="mk-type ${x.type}">${freeTypeLabel(x.type)}</span>
+      <p>${x.item || ''}</p>
+      <div style="font-size:11.5px;color:var(--text-3);line-height:1.75">
+        <div style="display:flex;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg><span>${x.where}</span></div>
+        <div style="display:flex;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><span>${x.time}</span></div>
+      </div>
+      <div class="mk-meta">
+        <span style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${creditPill(x.author)}</span>
+        ${x.claim
+          ? `<span class="claim-inline">${x.claim.code} · ${x.claim.status==='used'?'已核销':'待领取'}</span>`
+          : `<button class="btn btn-ghost" onclick="claimFreebie('${x.id}')">我想要</button>`}
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">这个类型还没有帖子，点右上角「+ 发布无料」试试。</div>`;
+}
+function setFreeFilter(v){ state.freeFilter = v; renderFreebies(); }
+function claimFreebie(id){
+  const f = (ChasingDatabase.freebies||[]).find(x=>x.id===id);
+  if(!f){ toast('帖子不存在'); return; }
+  if(f.claim && f.claim.status !== 'used'){ toast(`你已经领过这张：${f.claim.code}`); switchUgcTab('claim'); return; }
+  const code = genClaimCode();
+  f.claim = { code: 'KR-' + code, status:'pending', at:new Date().toISOString() };
+  f.joiners = (f.joiners||0) + 1;
+  saveDatabase(); renderFreebies(); renderClaims();
+  switchPage('ugc'); switchUgcTab('claim');
+  toast(`领取码已生成：${f.claim.code} · 现场出示即可`);
+}
+function joinFreebie(id){ claimFreebie(id); }
+
+/* 发起联系申请：不暴露联系方式，先站内沟通 */
+function openContactModal(postKind, postId){
+  const pool = postKind === 'free' ? (ChasingDatabase.freebies||[]) : (ChasingDatabase.goods||[]);
+  const post = pool.find(x => x.id === postId);
+  if(!post){ toast('帖子不存在'); return; }
+  state.contactTarget = { postKind, postId, post };
+  const isGoods = postKind === 'goods';
+  document.getElementById('contactTitle').textContent = isGoods ? '联系申请' : '我想领取 / 互换';
+  document.getElementById('contactPost').innerHTML = `
+    <b>${post.title}</b>
+    <span>${post.star} · ${isGoods ? (post.deal==='sell' ? '转出 NT$ '+post.price : '收买 预算 NT$ '+post.price) + ' · ' + post.cond : freeTypeLabel(post.type) + ' · ' + (post.where||'')}</span>
+    <em>发布者：${post.author}</em>`;
+  document.getElementById('contactMsg').value = isGoods
+    ? `你好，这件还在吗？想约在${post.where || '场馆附近'}面交。`
+    : `你好，我想要这份无料，${post.where ? '在现场 ' + post.where + ' 可以吗？' : '请问怎么领取？'}`;
+  openModal('contactModal');
+}
+
+function submitContactForm(e){
+  e.preventDefault();
+  const t = state.contactTarget;
+  if(!t){ closeModal('contactModal'); return; }
+  const msg = document.getElementById('contactMsg').value.trim();
+  const thread = {
+    id:'t'+Date.now(), postKind:t.postKind, postId:t.postId, postTitle:t.post.title,
+    postAuthor:t.post.author, from:'我', to:t.post.author, status:'pending', mine:true,
+    msg, reply:'', createdAt:new Date().toISOString()
+  };
+  ChasingDatabase.threads = ChasingDatabase.threads || [];
+  ChasingDatabase.threads.unshift(thread);
+  t.post.requests = (t.post.requests||0) + 1;
+  saveDatabase();
+  closeModal('contactModal');
+  renderThreads(); renderClaims();
+  toast(`已向「${t.post.author}」发送申请，对方同意后才会交换联系方式`);
+  state.contactTarget = null;
+}
+
+/* 收件箱渲染 */
+function renderThreads(){
+  const box = document.getElementById('threadList');
+  if(!box) return;
+  const list = ChasingDatabase.threads || [];
+  const pending = list.filter(t=>t.status==='pending').length;
+  const dot = document.getElementById('msgDot');
+  if(dot){ dot.style.display = pending ? 'block' : 'none'; }
+  if(!list.length){
+    box.innerHTML = `<div class="empty">还没有联系申请。去「无料交换 / 周边」点一下「我想要 / 联系卖家」试试。</div>`;
+    return;
+  }
+  box.innerHTML = list.map(t=>`
+    <div class="th-item" onclick="openThread('${t.id}')">
+      <span class="th-avatar">${String(t.to||'粉').slice(0,1)}</span>
+      <div class="th-main">
+        <b>${t.postTitle}</b>
+        <span>${t.msg}</span>
+      </div>
+      <div class="th-side">
+        <span class="th-badge ${t.status}">${({pending:'等待回应', accepted:'已同意', declined:'已拒绝'})[t.status]}</span>
+        <span class="th-time">${(t.createdAt||'').slice(5,16).replace('T',' ')}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openThread(id){
+  const t = (ChasingDatabase.threads||[]).find(x=>x.id===id);
+  if(!t) return;
+  closeModal('msgModal');
+  state.activeThread = id;
+  document.getElementById('threadTitle').textContent = t.postTitle;
+  document.getElementById('threadBody').innerHTML = `
+    <div class="th-meta">${t.postKind==='goods'?'周边交易':'无料交换'} · 发布者 ${t.postAuthor}</div>
+    <div class="th-msg mine"><span>${t.msg}</span><em>我 · ${(t.createdAt||'').slice(5,16).replace('T',' ')}</em></div>
+    ${t.reply ? `<div class="th-msg"><span>${t.reply}</span><em>${t.to}</em></div>` : ''}
+    ${t.status==='pending'
+      ? `<div class="th-tip">申请已发出，等待对方回应。为防诈骗，双方同意后才会显示联系方式。</div>
+         <div class="th-actions"><button class="btn btn-ghost" onclick="decideThread('${t.id}', false)">撤回申请</button>
+         <button class="btn btn-primary" onclick="decideThread('${t.id}', true)">模拟对方同意</button></div>`
+      : `<div class="th-ok">✓ 对方已同意，可在现场当面交换（不要提前转账）</div>
+         <div class="th-actions"><button class="btn btn-ghost" onclick="openContactInfo('${t.id}')">查看交换方式</button>
+         <button class="btn btn-primary" onclick="openReview('${t.id}')">标记完成并评价</button></div>`}`;
+  openModal('threadModal');
+}
+
+function decideThread(id, ok){
+  const t = (ChasingDatabase.threads||[]).find(x=>x.id===id);
+  if(!t) return;
+  if(ok){
+    t.status = 'accepted';
+    t.reply = `好呀，那我们按你说的来！我在${t.postKind==='goods'?'现场':'场馆附近'}等你，见面再确认细节。`;
+    toast('对方已同意，可在现场面交');
+  } else {
+    ChasingDatabase.threads = ChasingDatabase.threads.filter(x=>x.id!==id);
+    toast('已撤回该申请');
+    closeModal('threadModal');
+  }
+  saveDatabase(); renderThreads(); openThread(id);
+}
+
+function openContactInfo(id){
+  toast('联系方式仅在双方同意后开放：已在现场核对昵称 + 申请码（示例）');
+}
+
+function renderGoods(){
+  const box = document.getElementById('goodsGrid');
+  if(!box) return;
+  const filters = document.getElementById('goodsFilters');
+  const opts = [['','全部'],['sell','转出'],['buy','收买']];
+  filters.innerHTML = opts.map(([v,l])=>`<button class="${state.goodsFilter===v?'on':''}" onclick="setGoodsFilter('${v}')">${l}</button>`).join('');
+
+  let list = (ChasingDatabase.goods||[]).slice();
+  if(state.goodsFilter) list = list.filter(x=>x.deal===state.goodsFilter);
+  document.getElementById('goodsCount').textContent = (ChasingDatabase.goods||[]).length;
+
+  box.innerHTML = list.length ? list.map(x=>{
+    const star = ChasingDatabase.stars.find(s=>s.name===x.star) || { color:'#7b6ef0', initials:'CH' };
+    return `<div class="gd-item">
+      <span class="gd-thumb" style="background:${star.color}1f;color:${star.color}">${goodsLabel(x)}</span>
+      <div class="gd-main">
+        <b>${x.title}</b>
+        <span>${x.star} · ${x.cond} · ${x.where}</span>
+        <span style="display:flex;align-items:center;gap:5px;margin-top:4px">${creditPill(x.author)}</span>
+      </div>
+      <div class="gd-side">
+        <span class="gd-price ${x.deal==='sell'?'':'free'}">${x.deal==='sell' ? 'NT$ ' + x.price : '预算 NT$ ' + x.price}</span>
+        <span class="gd-cond">${x.deal==='sell'?'转出':'收买'}</span>
+        <button class="btn btn-ghost" style="height:30px;padding:0 12px;font-size:12px" onclick="openContactModal('goods','${x.id}')">${x.deal==='sell'?'联系卖家':'我有货'}</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">这个类型还没有帖子，点右上角「+ 发布周边」试试。</div>`;
+}
+function setGoodsFilter(v){ state.goodsFilter = v; renderGoods(); }
+function goodsLabel(x){
+  const t = (x.title||'') + (x.item||'');
+  if(/专辑|CD|album/i.test(t)) return '专辑';
+  if(/手灯|应援棒|light/i.test(t)) return '手灯';
+  if(/玩偶|娃|SKZOO/i.test(t)) return '玩偶';
+  if(/T恤|服饰|围巾|帽|衣/i.test(t)) return '服饰';
+  if(/卡/ .test(t)) return '小卡';
+  return x.deal === 'buy' ? '收买' : '周边';
+}
+function contactGoods(id){
+  const x = (ChasingDatabase.goods||[]).find(g=>g.id===id);
+  toast(x ? `已向「${x.author}」发起联系申请（示例动作）` : '帖子不存在');
+}
+
+/* ---------- 子页签 ---------- */
+function switchUgcTab(tab){
+  state.ugcTab = tab;
+  document.querySelectorAll('.ugc-tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.ugc-pane').forEach(p=>p.classList.toggle('active', p.id === 'pane-'+tab));
+  if(tab === 'claim') renderClaims();
+}
+
+/* ---------- UGC ---------- */
+let freshUgcId = null;
+function renderUGC(){
+  const approved = ChasingDatabase.ugc.filter(u => u.approved);
+  document.getElementById('ugcCount').textContent = approved.length;
+  const list = document.getElementById('ugcList');
+  list.innerHTML = approved.length ? approved.map(u => {
+    const star = ChasingDatabase.stars.find(s=>s.name===u.star) || { color:'#7b6ef0', initials:'CH' };
+    const isNew = u.id === freshUgcId;
+    return `<div class="ugc-item ${isNew?'fresh':''}" data-id="${u.id}" onclick="focusUgc('${u.id}')">
+      <span class="avatar" style="background:${star.color}">${star.initials}</span>
+      <div style="min-width:0">
+        <b>${u.title}</b><span class="badge" style="${isNew?'background:var(--accent-soft);color:var(--accent)':''}">${isNew?'刚刚通过':'已核实'}</span>
+        <div class="sub">${u.star} · 来自 ${u.author}</div>
+        <p>${u.body}</p>
+        ${u.venue ? `<div class="spot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>${u.venue}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">还没有情报，点击右上角「+」提供第一条。</div>`;
+  renderUgcMap();
+}
+
+function renderUgcMap(){
+  const stage = document.getElementById('ugcMap');
+  if(!stage) return;
+  const items = ChasingDatabase.ugc.filter(u => u.approved);
+  const focus = state.mapFocus ? items.find(u=>u.id===state.mapFocus) : null;
+  const geo = focus ? venueGeo(focus.venue) : { lat:37.5665, lng:126.9780 };
+  const zoom = focus ? 15 : 5;
+
+  const chips = items.map(u => {
+    const isOn = state.mapFocus === u.id;
+    return `<button class="map-chip ${isOn?'on':''}" onclick="focusUgc('${u.id}', true)" data-id="${u.id}">
+      ${u.venue || u.title}</button>`;
+  }).join('');
+
+  stage.innerHTML = `
+    ${mapFrame(geo.lat, geo.lng, focus ? focus.venue : '韩国 · 全球场馆', zoom, null)}
+    <div class="map-chips">${chips || '<span class="map-empty">暂无情报点位</span>'}</div>
+    ${focus ? `<div class="map-detail">
+        <b>${focus.title}</b>
+        <span>${focus.venue} · 来自 ${focus.author}</span>
+        <p>${focus.body}</p>
+      </div>` : ''}`;
+}
+
+/* 列表 ↔ 地图 联动（Google Maps 居中切换） */
+function focusUgc(id, fromMap){
+  state.mapFocus = (state.mapFocus === id) ? null : id;
+  document.querySelectorAll('.ugc-item').forEach(el => el.classList.toggle('hl', el.dataset.id === id && !!state.mapFocus));
+  renderUgcMap();
+  if(fromMap){
+    const card = document.querySelector(`.ugc-item[data-id="${id}"]`);
+    if(card) card.scrollIntoView({block:'center', behavior:'smooth'});
+  }
+}
+
+function submitPostForm(e){
+  e.preventDefault();
+  const kind    = document.getElementById('postKind').value;
+  const title   = document.getElementById('postTitle').value.trim();
+  const star    = document.getElementById('postStar').value.trim() || '未知艺人';
+  const body    = document.getElementById('postText').value.trim() || '（未填写详细内容）';
+  const author  = document.getElementById('postAuthor').value.trim() || '匿名粉丝';
+  const venue   = document.getElementById('postVenue').value.trim();
+  if(!title) return;
+
+  const item = { id:'p'+Date.now(), kind, title, star, body, author, venue, approved:false };
+
+  if(kind === 'free'){
+    item.type = document.getElementById('postFreeType').value;
+    item.item = document.getElementById('postItem').value.trim() || title;
+    item.where = document.getElementById('postWhere').value.trim() || '地点待定';
+    item.time = '待约定';
+    item.joiners = 0;
+  }
+  if(kind === 'goods'){
+    item.deal = document.getElementById('postDeal').value;
+    item.price = Number(document.getElementById('postPrice').value || 0);
+    item.cond = document.getElementById('postCond').value;
+    item.where = venue || '面交优先';
+    item.icon = item.deal === 'sell' ? '📦' : '🛒';
+  }
+  state.pendingUGCItem = item;
+
+  document.getElementById('reviewTitle').textContent = title;
+  document.getElementById('reviewBody').textContent = body;
+  const kindLabel = ({ info:'场馆情报', free:'应援无料', goods:'周边交易' })[kind];
+  const extra = kind === 'info' ? ' · 拟上图位置：' + guessVenueSpot(venue, title).venue : '';
+  document.getElementById('reviewMeta').textContent = `${kindLabel} · ${star} · 提交者：${author}${extra}`;
+
+  closeModal('postModal');
+  e.target.reset();
+  onPostKindChange();
+  openModal('adminReviewModal');
+}
+
+function handleAdminReview(approved){
+  closeModal('adminReviewModal');
+  const item = state.pendingUGCItem;
+  if(!item) return;
+
+  if(!approved){
+    toast('已驳回该条内容');
+    state.pendingUGCItem = null;
+    return;
+  }
+
+  item.approved = true;
+  if(item.kind === 'free'){
+    item.approved = true;
+    ChasingDatabase.freebies = ChasingDatabase.freebies || [];
+    ChasingDatabase.freebies.unshift(item);
+    saveDatabase(); renderFreebies();
+    switchPage('ugc'); switchUgcTab('free');
+    toast('无料帖已通过，已发布到「无料交换」');
+  } else if(item.kind === 'goods'){
+    ChasingDatabase.goods = ChasingDatabase.goods || [];
+    ChasingDatabase.goods.unshift(item);
+    saveDatabase(); renderGoods();
+    switchPage('ugc'); switchUgcTab('goods');
+    toast('周边帖已通过，已发布到「周边转出 / 收买」');
+  } else {
+    const spot = guessVenueSpot(item.venue, item.title);
+    item.venue = spot.venue; item.x = spot.x; item.y = spot.y;
+    ChasingDatabase.ugc.unshift(item);
+    freshUgcId = item.id;
+    saveDatabase(); renderUGC();
+    switchPage('ugc'); switchUgcTab('info');
+    toast(`情报已通过 · 已上图 ${item.venue}`);
+    setTimeout(()=>{ const card = document.querySelector(`.ugc-item[data-id="${item.id}"]`); if(card) card.classList.remove('fresh'); }, 4000);
+  }
+  state.pendingUGCItem = null;
+}
+
+function openInbox(){
+  renderThreads();
+  openModal('msgModal');
+}
+
+/* ================= 交易完成 / 互评 ================= */
+function openReview(threadId){
+  const t = (ChasingDatabase.threads||[]).find(x=>x.id===threadId);
+  if(!t) return;
+  state.reviewTarget = { threadId, to: t.to, postTitle: t.postTitle };
+  document.getElementById('reviewWho').innerHTML = `
+    <span class="cr-avatar">${String(t.to).slice(0,1)}</span>
+    <span>评价 ${t.to}<small>${t.postTitle}</small></span>`;
+  document.querySelectorAll('#reviewStars button').forEach(b=>b.classList.remove('on'));
+  state.reviewStars = 0;
+  document.getElementById('reviewText').value = '';
+  closeModal('threadModal');
+  openModal('reviewModal');
+}
+
+function pickReviewStar(n){
+  state.reviewStars = n;
+  document.querySelectorAll('#reviewStars button').forEach((b,i)=>b.classList.toggle('on', i < n));
+}
+
+function submitReviewForm(e){
+  e.preventDefault();
+  const stars = state.reviewStars || 0;
+  if(!stars){ toast('请先选择星级'); return; }
+  const body = document.getElementById('reviewText').value.trim() || '（未填写文字评价）';
+  const t = state.reviewTarget;
+  if(!t){ closeModal('reviewModal'); return; }
+
+  ChasingDatabase.reviews = ChasingDatabase.reviews || [];
+  ChasingDatabase.reviews.unshift({
+    id:'rv'+Date.now(), from:'我吧', to:t.to, stars, postTitle:t.postTitle,
+    text:body, at:new Date().toISOString().slice(0,10)
+  });
+
+  // 更新对方信用分（加权平均）
+  const u = getUser(t.to);
+  const prevDeals = u.deals || 0;
+  const prevTotal = (u.credit || 0) * prevDeals;
+  u.deals = prevDeals + 1;
+  u.credit = Math.round(((prevTotal + stars) / u.deals) * 10) / 10;
+  u.isNew = false;
+
+  // 更新我自己
+  const me = getUser('我吧');
+  me.deals = (me.deals || 0) + 1;
+  me.credit = Math.round((((me.credit||4.5)*(me.deals-1) + 5) / me.deals) * 10) / 10;
+
+  // 关联帖子：标记已完成
+  const post = t.to && (ChasingDatabase.goods||[]).concat(ChasingDatabase.freebies||[]).find(x=>x.title === t.postTitle);
+  if(post) post.status = 'done';
+
+  const thread = (ChasingDatabase.threads||[]).find(x=>x.id===t.threadId);
+  if(thread){ thread.status = 'done'; thread.reviewed = true; }
+
+  saveDatabase();
+  closeModal('reviewModal');
+  renderGoods(); renderFreebies(); renderThreads();
+  toast(`已评价 ${stars} 星，${t.to} 当前信用 ${u.credit.toFixed(1)}`);
+  state.reviewTarget = null;
+}
+
+/* ================= 交易信用分 ================= */
+function getUser(nick){
+  ChasingDatabase.users = ChasingDatabase.users || {};
+  if(!ChasingDatabase.users[nick]){
+    ChasingDatabase.users[nick] = { nick, credit:0, deals:0, likes:0, joined:new Date().toISOString().slice(0,10), avatar:String(nick).slice(0,1), isNew:true };
+  }
+  return ChasingDatabase.users[nick];
+}
+function creditStars(v){
+  const n = Math.round(Number(v) || 0);
+  return '<span class="stars">' + '★'.repeat(n) + '<i>' + '★'.repeat(5-n) + '</i></span>';
+}
+function creditPill(nick){
+  const u = getUser(nick);
+  if(u.isNew || !u.deals) return `<span class="credit new">新用户</span>`;
+  const warn = u.warned ? `<span style="background:#ef4444;color:#fff;font-size:10px;padding:1px 5px;border-radius:4px;margin-right:4px;font-weight:600">⚠ 风险</span>` : '';
+  return `<span class="credit" onclick="event.stopPropagation();openCredit('${nick}')">${warn}${creditStars(u.credit)} <b>${u.credit.toFixed(1)}</b> · ${u.deals} 单</span>`;
+}
+function openCredit(nick){
+  const u = getUser(nick);
+  const rv = (ChasingDatabase.reviews||[]).filter(r => r.to === nick);
+  const avg = u.deals ? u.credit.toFixed(1) : '—';
+  document.getElementById('creditName').innerHTML = `
+    <span class="cr-avatar">${u.avatar || String(nick).slice(0,1)}</span>
+    <span>${u.nick}<small>加入于 ${u.joined} · ${u.deals} 单完成 · ${u.likes} 人觉得靠谱</small></span>`;
+  document.getElementById('creditBody').innerHTML = `
+    <div class="cr-score">
+      <div class="cr-num">${avg}</div>
+      <div>
+        ${creditStars(u.credit)}
+        <div class="cr-sub">综合信用分 · 满分 5.0</div>
+      </div>
+    </div>
+    <div class="cr-bars">
+      ${[['面交准时', u.credit], ['物品相符', Math.max(0, u.credit - 0.1)], ['沟通顺畅', Math.min(5, u.credit + 0.1)]]
+        .map(([k,v])=>`<div class="cr-bar"><span>${k}</span><div class="bar"><i style="width:${(v/5*100)}%"></i></div><b>${v.toFixed(1)}</b></div>`).join('')}
+    </div>
+    <h5 class="cr-h">收到的评价 <span>${rv.length}</span></h5>
+    ${rv.length ? rv.map(r=>`<div class="cr-rv">
+        <div class="cr-rv-top"><b>${r.from}</b>${creditStars(r.stars)}<em>${r.at}</em></div>
+        <div class="cr-rv-post">${r.postTitle}</div>
+        <p>${r.text}</p>
+      </div>`).join('') : `<div class="ch-empty">还没有评价，完成第一笔交易后就会出现在这里。</div>`}
+    <div class="cr-tip">信用分来自完成交易后的互评；被举报、放鸽子的记录会折算扣分。</div>`;
+  openModal('creditModal');
+}
+
+/* ================= 无料领取码 ================= */
+function genClaimCode(){
+  const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let out = '';
+  for(let i=0;i<4;i++) out += abc[Math.floor(Math.random()*abc.length)];
+  return 'IVE-'.replace('IVE-','') + out; // 纯 4 位，前缀在界面上拼
+}
+/* 当天最早，其次场馆最近 */
+function claimSortKey(f){
+  return (f.time || '99:99');
+}
+function qrCodeSvg(code, size){
+  const s = size || 54;
+  const cells = 15;
+  let hash = 0;
+  for(let i=0;i<code.length;i++) hash = (hash * 31 + code.charCodeAt(i)) >>> 0;
+  let rects = '';
+  const finder = (ox, oy) => {
+    rects += `<rect x="${ox}" y="${oy}" width="4" height="4" fill="#111"/>`;
+    rects += `<rect x="${ox+0.8}" y="${oy+0.8}" width="2.4" height="2.4" fill="#fff"/>`;
+    rects += `<rect x="${ox+1.4}" y="${oy+1.4}" width="1.2" height="1.2" fill="#111"/>`;
+  };
+  finder(0, 0); finder(cells-4, 0); finder(0, cells-4);
+  for(let y=0;y<cells;y++){
+    for(let x=0;x<cells;x++){
+      if((x<5&&y<5)||(x>=cells-5&&y<5)||(x<5&&y>=cells-5)) continue;
+      const bit = ((hash ^ (x*73856093) ^ (y*19349663)) >>> ((x+y)%16)) & 1;
+      if(bit) rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 ${cells} ${cells}" width="${s}" height="${s}" style="background:#fff;padding:3px;border-radius:6px;border:1px solid #e2e8f0;display:block;flex-shrink:0">${rects}</svg>`;
+}
+
+function openQrModal(id){
+  const f = (ChasingDatabase.freebies||[]).find(x=>x.id===id);
+  if(!f || !f.claim) return;
+  const c = f.claim;
+  const done = c.status === 'used';
+  const body = document.getElementById('qrModalBody');
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      ${qrCodeSvg(c.code, 180)}
+      <div style="font-size:26px;font-weight:800;letter-spacing:2px;color:var(--ink)">${c.code}</div>
+      <div style="font-size:14px;font-weight:600;color:var(--ink)">${f.title}</div>
+      <div style="font-size:12.5px;color:var(--muted)">${f.star} · ${f.where || '现场'} · ${f.time || ''}</div>
+      <div style="margin-top:4px">${done ? `<span class="claim-status used">✓ 已核销（${c.usedAt||''}）</span>` : `<span class="claim-status pending">待现场核销</span>`}</div>
+      ${done ? '' : `<button class="btn btn-pri" style="width:100%;margin-top:8px" onclick="useClaim('${f.id}');openQrModal('${f.id}')">模拟现场扫码核销</button>`}
+    </div>
+  `;
+  openModal('qrModal');
+}
+
+function openScanModal(){
+  const pending = (ChasingDatabase.freebies||[]).filter(f => f.claim && f.claim.status !== 'used');
+  const body = document.getElementById('scanModalBody');
+  body.innerHTML = `
+    <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:16px;text-align:center;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px">现场扫一扫核销</div>
+      <div style="font-size:12px;color:var(--muted)">输入对方的 4 位领取码（如 KR-XXXX），或直接点击下方待核销列表</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input id="scanCodeInput" placeholder="输入领取码，如 KR-8F2A" style="flex:1;height:38px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-size:13px">
+      <button class="btn btn-pri" style="height:38px" onclick="verifyScanCode()">核销</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">待核销领取码（${pending.length}）</div>
+    <div style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow:auto">
+      ${pending.length ? pending.map(f=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--line);border-radius:10px">
+          <div><b style="font-size:13px">${f.claim.code}</b> <span style="font-size:12px;color:var(--muted)">${f.title}</span></div>
+          <button class="btn btn-ghost" style="height:28px;padding:0 10px;font-size:12px" onclick="useClaim('${f.id}');openScanModal()">核销</button>
+        </div>
+      `).join('') : '<div style="font-size:12.5px;color:var(--muted);text-align:center;padding:12px">暂无待核销的领取码</div>'}
+    </div>
+  `;
+  openModal('scanModal');
+}
+
+function verifyScanCode(){
+  const val = (document.getElementById('scanCodeInput').value||'').trim().toUpperCase();
+  if(!val){ toast('请输入领取码'); return; }
+  const f = (ChasingDatabase.freebies||[]).find(x => x.claim && x.claim.code.toUpperCase() === val);
+  if(!f){ toast('未找到该领取码'); return; }
+  if(f.claim.status === 'used'){ toast('该领取码已核销过，不能重复使用'); return; }
+  useClaim(f.id);
+  openScanModal();
+}
+
+function renderClaims(){
+  const box = document.getElementById('claimList');
+  if(!box) return;
+  const list = (ChasingDatabase.freebies||[]).filter(f => f.claim);
+  const used = list.filter(f => f.claim.status === 'used').length;
+  const el = document.getElementById('claimStat');
+  if(el) el.innerHTML = `${list.length} 张 · 已核销 ${used} <button class="btn btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px;margin-left:8px" onclick="openScanModal()">扫一扫核销</button>`;
+
+  box.innerHTML = list.length ? list.map(f=>{
+    const c = f.claim;
+    const done = c.status === 'used';
+    return `<div class="claim-card ${done?'done':''}">
+      <div style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="openQrModal('${f.id}')" title="点击放大二维码">
+        ${qrCodeSvg(c.code, 54)}
+        <div class="claim-left">
+          <span class="claim-code">${c.code}</span>
+          <span class="claim-meta">${f.title}</span>
+          <span class="claim-sub">${f.star} · ${f.where || '现场'} · ${f.time || ''}</span>
+        </div>
+      </div>
+      <div class="claim-right">
+        <span class="claim-status ${c.status}">${done ? '已核销' : '待领取'}</span>
+        ${done ? `<span class="claim-time">${c.usedAt||''}</span>`
+               : `<button class="btn btn-ghost" style="height:30px;padding:0 12px;font-size:12px" onclick="openQrModal('${f.id}')">出示二维码</button>`}
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">还没有领取码。去「无料交换」点「我想要」就会生成一张。</div>`;
+}
+
+function useClaim(id){
+  const f = (ChasingDatabase.freebies||[]).find(x=>x.id===id);
+  if(!f || !f.claim) return;
+  const now = new Date();
+  f.claim.status = 'used';
+  f.claim.usedAt = `${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  saveDatabase(); renderClaims(); renderFreebies();
+  toast(`已核销 ${f.claim.code}（一码只能领一次）`);
+}
+
+/* ---------- 举报 ---------- */
+function openReportModal(targetNick){
+  const sel = document.getElementById('reportTarget');
+  if(sel){
+    const users = Object.keys(ChasingDatabase.users || {});
+    sel.innerHTML = '<option value="">不指定具体用户</option>' + users.map(u => `<option value="${u}">${u}</option>`).join('');
+    if(targetNick && users.includes(targetNick)) sel.value = targetNick;
+  }
+  openReportModal();
+}
+
+function submitReportForm(e){
+  e.preventDefault();
+  const target = (document.getElementById('reportTarget')||{}).value || '';
+  const type = (document.getElementById('reportType')||{}).value || '其他';
+  const text = (document.getElementById('reportText')||{}).value.trim();
+  document.getElementById('reportText').value = '';
+  closeModal('reportModal');
+
+  if(!target){
+    toast('举报已提交，我们会在 24 小时内核实');
+    return;
+  }
+  toast('举报已提交，正在核实中…');
+  setTimeout(()=>{
+    const u = getUser(target);
+    u.credit = Math.max(1.0, +((u.credit || 4.5) - 0.8).toFixed(1));
+    u.warned = true;
+    u.warnReason = type;
+    u.warnCount = (u.warnCount || 0) + 1;
+    ChasingDatabase.reviews = ChasingDatabase.reviews || [];
+    ChasingDatabase.reviews.unshift({
+      id: 'rv' + Date.now(),
+      from: '风控核实',
+      to: target,
+      stars: 1,
+      postTitle: '举报核实：' + type,
+      text: text || '经核实存在违规行为，已自动扣减信用分 0.8 并置顶标记',
+      at: '刚刚'
+    });
+    saveDatabase();
+    renderFreebies();
+    renderGoods();
+    toast(`已核实：${target} 信用分 -0.8（当前 ${u.credit}），已置顶风险标记`);
+  }, 1200);
+}
+
+/* ---------- 主题 ---------- */
+function applyTheme(mode){
+  state.themeMode = mode;
+  const dark = mode === 'dark' || (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  ['Light','Dark','Auto'].forEach(k=>{
+    const btn = document.getElementById('themeBtn'+k);
+    if(btn) btn.classList.toggle('on', k.toLowerCase()===mode);
+  });
+  try{ localStorage.setItem('chasing-theme', mode); }catch(_){}
+}
+function setThemeMode(mode){ applyTheme(mode); toast('主题已切换为：' + ({light:'浅色',dark:'深色',auto:'跟随系统'})[mode]); }
+function toggleThemeQuick(){
+  const now = document.documentElement.getAttribute('data-theme');
+  applyTheme(now === 'dark' ? 'light' : 'dark');
+}
+
+/* ---------- 数据导出 / 重置 ---------- */
+function exportDatabase(){
+  const data = JSON.stringify(ChasingDatabase, null, 2);
+  const blob = new Blob([data], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'chasing-database.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('数据库已导出（含 UGC 地图坐标）');
+}
+function resetDatabase(){
+  try{
+    localStorage.removeItem('chasing-db');
+    localStorage.removeItem('chasing-sync');
+    localStorage.removeItem('chasing-theme');
+  }catch(_){}
+  location.reload();
+}
+
+/* ================= 本地持久化 ================= */
+const DB_KEY = 'chasing-db';
+const SYNC_KEY = 'chasing-sync';
+function saveDatabase(){
+  try{
+    localStorage.setItem(DB_KEY, JSON.stringify({
+      stars: ChasingDatabase.stars,
+      events: ChasingDatabase.events,
+      votes: ChasingDatabase.votes,
+      fanclubs: ChasingDatabase.fanclubs || [],
+      freebies: ChasingDatabase.freebies || [],
+      goods: ChasingDatabase.goods || [],
+      joinedFanclubs: state.joinedFanclubs,
+      threads: ChasingDatabase.threads || [],
+      users: ChasingDatabase.users || {},
+      reviews: ChasingDatabase.reviews || [],
+      ugc: ChasingDatabase.ugc,
+      scrapeCount: state.scrapeCount,
+      savedAt: new Date().toISOString()
+    }));
+  }catch(_){}
+}
+function loadDatabase(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(!raw) return false;
+    const data = JSON.parse(raw);
+    if(!data || !Array.isArray(data.stars) || !data.stars.length) return false;
+    ChasingDatabase.stars = data.stars;
+    ChasingDatabase.events = data.events || ChasingDatabase.events;
+    ChasingDatabase.votes = data.votes || ChasingDatabase.votes;
+    if(Array.isArray(data.fanclubs)) ChasingDatabase.fanclubs = data.fanclubs;
+    if(Array.isArray(data.freebies)) ChasingDatabase.freebies = data.freebies;
+    if(Array.isArray(data.goods)) ChasingDatabase.goods = data.goods;
+    if(Array.isArray(data.joinedFanclubs)) state.joinedFanclubs = data.joinedFanclubs;
+    if(Array.isArray(data.threads)) ChasingDatabase.threads = data.threads;
+    if(data.users) ChasingDatabase.users = data.users;
+    if(Array.isArray(data.reviews)) ChasingDatabase.reviews = data.reviews;
+    ChasingDatabase.ugc = (data.ugc || []).map(u => (u.venue && u.x != null) ? u : Object.assign(u, guessVenueSpot(u.venue, u.title)));
+    state.scrapeCount = data.scrapeCount || 0;
+    return true;
+  }catch(_){ return false; }
+}
+
+/* 根据场馆名猜一个地图坐标（无匹配就随机落点） */
+const VENUE_SPOTS = [
+  { k:'KSPO',      venue:'KSPO DOME',                    x:38, y:44 },
+  { k:'高尺',      venue:'高尺天空巨蛋 Gocheok Sky Dome', x:30, y:34 },
+  { k:'Gocheok',   venue:'高尺天空巨蛋 Gocheok Sky Dome', x:30, y:34 },
+  { k:'Inspire',   venue:'Inspire Arena',                x:22, y:18 },
+  { k:'仁川',      venue:'Inspire Arena',                x:22, y:18 },
+  { k:'Olympic Hall', venue:'首尔 Olympic Hall',         x:44, y:50 },
+  { k:'釜山',      venue:'釜山 BEXCO 会展中心',           x:52, y:76 },
+  { k:'BEXCO',     venue:'釜山 BEXCO 会展中心',           x:52, y:76 },
+  { k:'東京',      venue:'东京巨蛋 Tokyo Dome',           x:86, y:30 },
+  { k:'东京',      venue:'东京巨蛋 Tokyo Dome',           x:86, y:30 },
+  { k:'Tokyo',     venue:'东京巨蛋 Tokyo Dome',           x:86, y:30 },
+  { k:'曼谷',      venue:'Impact Arena Muang Thong Thani', x:64, y:74 },
+  { k:'Bangkok',   venue:'Impact Arena Muang Thong Thani', x:64, y:74 },
+  { k:'吉隆坡',    venue:'Axiata Arena',                  x:58, y:82 },
+  { k:'Kuala',     venue:'Axiata Arena',                  x:58, y:82 },
+  { k:'新加坡',    venue:'National Stadium · 新加坡',      x:72, y:60 },
+  { k:'Singapore', venue:'National Stadium · 新加坡',      x:72, y:60 },
+  { k:'洛杉矶',    venue:'SoFi Stadium',                   x:14, y:58 },
+  { k:'SoFi',      venue:'SoFi Stadium',                   x:14, y:58 },
+  { k:'伦敦',      venue:'O2 Arena',                       x:20, y:30 },
+  { k:'巴黎',      venue:'Paris La Défense Arena',         x:26, y:24 }
+];
+function guessVenueSpot(venueText, titleText){
+  const text = `${venueText||''} ${titleText||''}`;
+  const hit = VENUE_SPOTS.find(v => text.includes(v.k));
+  if(hit) return { venue:hit.venue, x:hit.x, y:hit.y };
+  return {
+    venue: venueText || '待确认场地',
+    x: Math.round(18 + Math.random()*66),
+    y: Math.round(18 + Math.random()*62)
+  };
+}
+
+/* ================= AI 爬虫模拟 ================= */
+function renderTerminalPlaceholder(){
+  if(!state.scrapeCount){
+    document.getElementById('scraperTerminal').innerHTML =
+      `<div style="opacity:1">[SYS] 引擎待命中 · 点击左侧「開啟 AI 爬蟲同步」開始抓取</div>`;
+    document.getElementById('scraperProgress').style.width = '0%';
+  }
+}
+
+function triggerScraperSimulation(){
+  const modal = document.getElementById('scraperModal');
+  const term = document.getElementById('scraperTerminal');
+  const prog = document.getElementById('scraperProgress');
+  term.innerHTML = '';
+  prog.style.width = '0%';
+  openModal('scraperModal');
+
+  const logs = [
+    { t:'[SYS] 啟動 CHASING AI 分佈式爬蟲引擎 V4.2 ...', d:0 },
+    { t:'[NET] 連接 Weverse / Melon 實時熱搜與巡演公告 API ... HTTP 200 OK', d:350 },
+    { t:'[NET] 抓取 Kpop Fanclub（Weverse / ONCE JAPAN）巡演日曆 ...', d:750 },
+    { t:'[AUTH] 對接 Interpark Global / Melon Ticket / Ticketmaster 票務庫存驗證 ...', d:1150 },
+    { t:'[AI] 過濾黃牛高價假票，校對全新明星行程點位 ...', d:1600 },
+    { t:'[DONE] 抓取完成，生成外部直達票務與投票鏈接', d:2100, ok:true }
+  ];
+  logs.forEach(l => setTimeout(()=>{
+    const div = document.createElement('div');
+    if(l.ok) div.className = 'ok';
+    div.textContent = l.t;
+    term.appendChild(div);
+    term.scrollTop = term.scrollHeight;
+  }, l.d));
+
+  let p = 0;
+  const progTimer = setInterval(()=>{
+    p = Math.min(100, p + 5 + Math.random()*7);
+    prog.style.width = p + '%';
+    if(p >= 100) clearInterval(progTimer);
+  }, 110);
+
+  setTimeout(()=>{
+    clearInterval(progTimer);
+    prog.style.width = '100%';
+    const added = appendScrapedDataToDatabase();
+    state.scrapeCount++;
+    document.getElementById('syncCount').textContent = state.scrapeCount;
+    document.getElementById('asideSyncCount').textContent = ChasingDatabase.events.length;
+    document.getElementById('asideLastSync').textContent = '刚刚';
+    try{ localStorage.setItem(SYNC_KEY, JSON.stringify({ count: state.scrapeCount, at: Date.now() })); }catch(_){}
+    const now = new Date();
+    const st = document.getElementById('asideSyncTime');
+    if(st) st.textContent = `${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    renderStars(); renderFilterOptions(); renderChips(); renderEvents(); renderVotes();
+    renderFanclubs(); renderFreebies(); renderGoods(); renderUGC(); renderClaims();
+    saveDatabase();
+    setTimeout(()=>{
+      closeModal('scraperModal');
+      toast(`同步完成：新增 ${added.stars} 位艺人、${added.events} 个行程`);
+      switchPage('discover');
+    }, 900);
+  }, 3000);
+}
+
+function appendScrapedDataToDatabase(){
+  const exist = new Set(ChasingDatabase.stars.map(s=>s.name));
+  const pool = SCRAPE_POOL.filter(s => !exist.has(s.name));
+  const picked = pool.sort(()=>Math.random()-0.5).slice(0, Math.max(10, Math.min(pool.length, 12)));
+  let evCount = 0;
+
+  picked.forEach((s, i) => {
+    const id = 's_' + Date.now() + '_' + i;
+    const star = {
+      id, name:s.name, initials:s.initials, color:s.color || PALETTE[i % PALETTE.length],
+      category:s.category, region:s.region, bio:s.bio, fanclub:s.fanclub || '粉丝团',
+      ticket_url: buildTicketUrl(s.name), vote_url: buildVoteUrl(s.name)
+    };
+    ChasingDatabase.stars.push(star);
+
+    const venue = rand(VENUES);
+    const month = 8 + Math.floor(Math.random()*5);           // 8 ~ 12 月
+    const day = 1 + Math.floor(Math.random()*27);
+    const date = `2026-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const title = `${s.name} ${rand(TITLES)}`;
+    ChasingDatabase.events.push({
+      id:'e_' + Date.now() + '_' + i,
+      star:s.name, title, date, time:rand(['18:00','19:00','19:30','20:00']) + ' · 当地时间',
+      location:venue.name, scope:venue.scope, city:venue.city, category:s.category,
+      address:`${venue.city} · ${venue.name}（AI 抓取，待人工补充详细地址）`,
+      route:['暂未公布详细交通指引，建议关注场馆网站','演出当日提前 90 分钟到达场馆周边','散场建议优先使用公共交通'],
+      tags:['演唱会', 'AI 抓取'], desc:`由 AI 爬虫从 Fanclub（${s.fanclub || '粉丝团'}）与票务平台同步，待人工二次核实。票务请以平台原始页面为准。`,
+      ticket_url: star.ticket_url, vote_url: star.vote_url,
+      guide:{ checklist:['实名制证件原件','电子票实时加载'], security:['不要向任何人私下转账购票'] }
+    });
+    evCount++;
+
+    ChasingDatabase.fanclubs = ChasingDatabase.fanclubs || [];
+    if(!ChasingDatabase.fanclubs.some(f => f.star === s.name)){
+      ChasingDatabase.fanclubs.push({
+        id:'f_' + Date.now() + '_' + i,
+        star:s.name, name:`${s.fanclub || 'Fanclub'} 粉丝团`,
+        platform:'Weverse', members: Math.floor(60 + Math.random()*900) * 1000,
+        posts: Math.floor(20 + Math.random()*400),
+        note:'AI 抓取到的粉丝团频道（待人工核实）', url:'https://weverse.io/'
+      });
+    }
+
+    if(Math.random() > 0.4){
+      ChasingDatabase.votes.push({
+        id:'v_' + Date.now() + '_' + i,
+        star:s.name, name:'应援投票入口',
+        note:'AI 抓取到的外部投票平台入口', pct: Math.floor(30 + Math.random()*60),
+        url: star.vote_url
+      });
+    }
+  });
+  return { stars: picked.length, events: evCount };
+}
+
+/* ================= 启动 ================= */
+function init(){
+  let saved = null;
+  try{ saved = localStorage.getItem('chasing-theme'); }catch(_){}
+  applyTheme(saved || 'light');
+
+  loadDatabase();
+  if(state.scrapeCount){
+    const c = document.getElementById('syncCount'); if(c) c.textContent = state.scrapeCount;
+    const t = document.getElementById('asideLastSync'); if(t) t.textContent = '已恢复';
+  }
+  try{
+    const sync = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null');
+    if(sync && sync.at){
+      const d = new Date(sync.at);
+      const el = document.getElementById('asideSyncTime');
+      if(el) el.textContent = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+  }catch(_){}
+
+  renderStars(); renderFilterOptions(); renderChips(); renderEvents();
+  renderVotes(); renderFanclubs(); renderFreebies(); renderGoods(); renderUGC(); renderCalendar();
+  switchUgcTab(state.ugcTab || 'info');
+  renderThreads();
+
+  document.getElementById('asideSyncCount').textContent = ChasingDatabase.events.length;
+  document.getElementById('asideLastSync').textContent = '—';
+
+  // 键盘 ESC 关闭弹窗
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') document.querySelectorAll('.overlay.show').forEach(m => closeModal(m.id));
+  });
+  // 点遮罩关闭
+  document.querySelectorAll('.overlay').forEach(ov => {
+    ov.addEventListener('click', e => { if(e.target === ov) closeModal(ov.id); });
+  });
+  // 跟随系统
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if(state.themeMode === 'auto') applyTheme('auto');
+  });
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a60ae017cea023de',t:'MTc5NTcxNjg5Mw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a60ae017cea023de',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
