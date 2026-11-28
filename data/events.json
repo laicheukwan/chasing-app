@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-28T02:27:10.787Z",
+  "updatedAt": "2026-11-28T11:24:58.004Z",
   "source": "CHASING 共享行程数据：人工核实文件（data/curated-events.json）+ 自动抓取（X @IVEstarship / IVE 官网 / Starship 官网公告 / YouTube @IVEstarship / Instagram @ivestarship）合并而成，人工条目优先。每小时由 GitHub Actions 自动更新。Weverse / Threads 不在来源内（IVE 没有这两个的官方账号）。",
   "stars": [
     "IVE"
