@@ -1,0 +1,294 @@
+{
+  "note": "人工维护文件：这里的行程来自 Instagram / 官方公告 / Weverse 等自动抓不到的来源，由人工核实后写入。自动脚本每次运行时都会先读这个文件，人工条目优先，自动抓到的重复内容会被去重丢弃。改这里就能更新网站，不用懂代码：照着现有条目的格式加一条即可（id 唯一、date 用 YYYY-MM-DD、time 未公布就写“未公布”）。",
+  "updatedAt": "2026-11-27T10:06:15Z",
+  "events": [
+    {
+      "address": "首尔特别市城东区圣水洞 PUBG Seongsu",
+      "category": "Kpop",
+      "city": "首尔",
+      "date": "2026-12-02",
+      "desc": "IVE 现身首尔圣水洞 PUBG Seongsu 快闪店，与粉丝一起听新歌〈Renegade〉；〈Renegade〉MV 同日公开，PUBG PC 端同日上线 IVE 主题内容。",
+      "guide": {
+        "checklist": [
+          "关注 IVE 官方 IG 与 PUBG 官方公告，等具体时间公布"
+        ],
+        "security": [
+          "快闪店不设门票代抢，任何「内部名额」都是骗局"
+        ]
+      },
+      "id": "ive-pubg-1202",
+      "location": "PUBG Seongsu",
+      "route": [
+        "以官方公告的入场指引为准，具体时间待公布"
+      ],
+      "scope": "韩国",
+      "star": "IVE",
+      "tags": [
+        "快闪店",
+        "听歌会",
+        "已官宣"
+      ],
+      "ticket_url": "https://www.seoulvibes.net/ive-the-squad-pubg-renegade/",
+      "time": "未公布",
+      "title": "PUBG THE SQUAD × IVE —〈Renegade〉听歌会 + 快闪店",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "高雄国家体育场，高雄",
+      "category": "Kpop",
+      "city": "高雄",
+      "date": "2026-12-05",
+      "desc": "张元英连续第六年担任 AAA 主持（与池昌旭、成韩彬、子瑜共同主持）；IVE 团体不参与演出。门票已售罄，Disney+ 全球直播。",
+      "guide": {
+        "checklist": [
+          "门票已售罄，请勿购买二手票",
+          "可通过 Disney+ 观看直播"
+        ],
+        "security": [
+          "警惕高价二手票与假票"
+        ]
+      },
+      "id": "ive-aaa-1205",
+      "location": "高雄国家体育场",
+      "route": [
+        "红毯 15:00 开始，颁奖礼 17:00 开始（当地时间）",
+        "Disney+ 全球独家直播"
+      ],
+      "scope": "亚洲",
+      "star": "IVE",
+      "tags": [
+        "颁奖礼",
+        "主持",
+        "已官宣"
+      ],
+      "ticket_url": "https://www.asiaartistawards.com/en/news/2026110505064567256",
+      "time": "红毯 15:00 · 颁奖礼 17:00（当地时间）",
+      "title": "2026 Asia Artist Awards — 张元英担任主持 Day 1",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "高雄国家体育场，高雄",
+      "category": "Kpop",
+      "city": "高雄",
+      "date": "2026-12-06",
+      "desc": "张元英连续第六年担任 AAA 主持（与池昌旭、成韩彬、子瑜共同主持）；IVE 团体不参与演出。门票已售罄，Disney+ 全球直播。",
+      "guide": {
+        "checklist": [
+          "门票已售罄，请勿购买二手票",
+          "可通过 Disney+ 观看直播"
+        ],
+        "security": [
+          "警惕高价二手票与假票"
+        ]
+      },
+      "id": "ive-aaa-1206",
+      "location": "高雄国家体育场",
+      "route": [
+        "红毯 15:00 开始，颁奖礼 17:00 开始（当地时间）",
+        "Disney+ 全球独家直播"
+      ],
+      "scope": "亚洲",
+      "star": "IVE",
+      "tags": [
+        "颁奖礼",
+        "主持",
+        "已官宣"
+      ],
+      "ticket_url": "https://www.asiaartistawards.com/en/news/2026110505064567256",
+      "time": "红毯 15:00 · 颁奖礼 17:00（当地时间）",
+      "title": "2026 Asia Artist Awards — 张元英担任主持 Day 2",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "东京都新宿区霞丘町 10-1",
+      "category": "Kpop",
+      "city": "东京",
+      "date": "2026-12-13",
+      "desc": "IVE 出演第二日演出；张元英与金载沅共同担任当日 MC。演出顺序当日公布，不提前公开。",
+      "guide": {
+        "checklist": [
+          "护照原件",
+          "单日指定席票 ¥22,000（税込）"
+        ],
+        "security": [
+          "仅通过 Ticket Pia 官方渠道购票"
+        ]
+      },
+      "id": "ive-mbgf-1213",
+      "location": "MUFG Stadium（日本国立竞技场）",
+      "route": [
+        "开场 15:00，开演 17:00（预定）",
+        "演出顺序不提前公布，以当日为准"
+      ],
+      "scope": "亚洲",
+      "star": "IVE",
+      "tags": [
+        "音乐节",
+        "已官宣"
+      ],
+      "ticket_url": "https://w.pia.jp/t/musicbank-gf2026/",
+      "time": "开场 15:00 · 开演 17:00（JST，预定）",
+      "title": "2026 MUSIC BANK GLOBAL FESTIVAL IN JAPAN — IVE 出演 Day 2",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "Starship Square / 各大零售商",
+      "category": "Kpop",
+      "city": "线上",
+      "date": "2026-12-23",
+      "desc": "IVE 2027 年周边套装《Midnight Tea Party》发售；预售期 11 月 23 日–12 月 6 日。这是商品发售，不是见面活动。",
+      "guide": {
+        "checklist": [
+          "认准官方商城与授权零售商"
+        ],
+        "security": [
+          "不要向陌生人转账购买"
+        ]
+      },
+      "id": "ive-sg-1223",
+      "location": "线上发售",
+      "route": [
+        "发售日以多家零售商一致口径为准（个别分销写 12 月 24 日）"
+      ],
+      "scope": "全球",
+      "star": "IVE",
+      "tags": [
+        "周边发售",
+        "已官宣"
+      ],
+      "ticket_url": "https://kpopmart.com/product/ive-2027-seasons-greetings-midnight-tea-party",
+      "time": "未公布",
+      "title": "IVE 2027 SEASON'S GREETINGS〈Midnight Tea Party〉发售",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "KINTEX，京畿道高阳市一山",
+      "category": "Kpop",
+      "city": "高阳",
+      "date": "2026-12-24",
+      "desc": "IVE 登台 2026 SBS 歌谣大战第一日演出；安俞真担任当日 MC（与 TXT 然竣、RIIZE 成灿共同主持）。",
+      "guide": {
+        "checklist": [
+          "关注 SBS 官方公告等时间公布"
+        ],
+        "security": [
+          "年末舞台不设公开售票渠道，谨防假票"
+        ]
+      },
+      "id": "ive-sbs-1224",
+      "location": "KINTEX",
+      "route": [
+        "具体开演时间待官方公布"
+      ],
+      "scope": "韩国",
+      "star": "IVE",
+      "tags": [
+        "年末舞台",
+        "已官宣"
+      ],
+      "ticket_url": "https://global.topstarnews.net/en/articleView.html?idxno=16284807",
+      "time": "未公布",
+      "title": "2026 SBS Gayo Daejeon — IVE 出演 Day 1",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "首尔特别市松坡区奥林匹克路 424",
+      "category": "Kpop",
+      "city": "首尔",
+      "date": "2027-01-29",
+      "desc": "IVE 第二次世界巡演首尔安可场第一场。粉丝俱乐部预售 12 月 16 日（韩国）/ 17 日（全球）20:00 KST，公售 12 月 18 日 20:00 KST；VIP ₩198,000 / 普通 ₩154,000，Melon Ticket 开卖。",
+      "guide": {
+        "checklist": [
+          "护照原件",
+          "Melon Ticket 实名购票"
+        ],
+        "security": [
+          "不要购买二手转让票",
+          "谨防要求私下汇款的票商"
+        ]
+      },
+      "id": "ive-encore-0129",
+      "location": "KSPO DOME",
+      "route": [
+        "地铁 5/9 号线「奥林匹克公园站」3 号出口，步行 8 分钟"
+      ],
+      "scope": "韩国",
+      "star": "IVE",
+      "tags": [
+        "演唱会",
+        "已官宣",
+        "实名制"
+      ],
+      "ticket_url": "https://www.instagram.com/p/Df8mlgtPHlX/",
+      "time": "19:30 · KST",
+      "title": "IVE WORLD TOUR〈SHOW WHAT I AM〉ENCORE",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "首尔特别市松坡区奥林匹克路 424",
+      "category": "Kpop",
+      "city": "首尔",
+      "date": "2027-01-30",
+      "desc": "IVE 第二次世界巡演首尔安可场第二场。粉丝俱乐部预售 12 月 16 日（韩国）/ 17 日（全球）20:00 KST，公售 12 月 18 日 20:00 KST；VIP ₩198,000 / 普通 ₩154,000，Melon Ticket 开卖。",
+      "guide": {
+        "checklist": [
+          "护照原件",
+          "Melon Ticket 实名购票"
+        ],
+        "security": [
+          "不要购买二手转让票",
+          "谨防要求私下汇款的票商"
+        ]
+      },
+      "id": "ive-encore-0130",
+      "location": "KSPO DOME",
+      "route": [
+        "地铁 5/9 号线「奥林匹克公园站」3 号出口，步行 8 分钟"
+      ],
+      "scope": "韩国",
+      "star": "IVE",
+      "tags": [
+        "演唱会",
+        "已官宣",
+        "实名制"
+      ],
+      "ticket_url": "https://www.instagram.com/p/Df8mlgtPHlX/",
+      "time": "18:00 · KST",
+      "title": "IVE WORLD TOUR〈SHOW WHAT I AM〉ENCORE",
+      "vote_url": "https://www.mubeat.tv/"
+    },
+    {
+      "address": "首尔特别市松坡区奥林匹克路 424",
+      "category": "Kpop",
+      "city": "首尔",
+      "date": "2027-01-31",
+      "desc": "IVE 第二次世界巡演首尔安可场第三场。粉丝俱乐部预售 12 月 16 日（韩国）/ 17 日（全球）20:00 KST，公售 12 月 18 日 20:00 KST；VIP ₩198,000 / 普通 ₩154,000，Melon Ticket 开卖。",
+      "guide": {
+        "checklist": [
+          "护照原件",
+          "Melon Ticket 实名购票"
+        ],
+        "security": [
+          "不要购买二手转让票",
+          "谨防要求私下汇款的票商"
+        ]
+      },
+      "id": "ive-encore-0131",
+      "location": "KSPO DOME",
+      "route": [
+        "地铁 5/9 号线「奥林匹克公园站」3 号出口，步行 8 分钟"
+      ],
+      "scope": "韩国",
+      "star": "IVE",
+      "tags": [
+        "演唱会",
+        "已官宣",
+        "实名制"
+      ],
+      "ticket_url": "https://www.instagram.com/p/Df8mlgtPHlX/",
+      "time": "16:00 · KST",
+      "title": "IVE WORLD TOUR〈SHOW WHAT I AM〉ENCORE",
+      "vote_url": "https://www.mubeat.tv/"
+    }
+  ]
+}
