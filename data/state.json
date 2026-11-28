@@ -1,0 +1,7 @@
+{
+  "note": "抓取状态文件：X 的 since_id 与已解析用户 ID、IG 上次检查时间存在这里，随仓库提交，Actions 每次运行靠它接着上次继续拉。不要手动改（除非想重拉：把 xSinceId 清空、igLastCheck 清空即可）。",
+  "xUserId": null,
+  "xSinceId": null,
+  "igLastCheck": null,
+  "updatedAt": "2026-11-27T17:16:19.067Z"
+}
