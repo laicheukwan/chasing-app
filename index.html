@@ -14,8 +14,8 @@
   --text:#1b1d28;
   --text-2:#5d6379;
   --text-3:#959bad;
-  --accent:#7b6ef0;
-  --accent-soft:#eeeaff;
+  --accent:#567ACE;
+  --accent-soft:#e8eefb;
   --accent-2:#5fd0b4;
   --lane:#f0effd;
   --danger:#ef5a5a;
@@ -36,8 +36,8 @@
   --text:#f0f1f6;
   --text-2:#a9aec2;
   --text-3:#767b90;
-  --accent:#9b8cff;
-  --accent-soft:#2a2740;
+  --accent:#7ea3e8;
+  --accent-soft:#232c44;
   --danger:#ff7171;
   --shadow-s:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
   --shadow-m:0 2px 4px rgba(0,0,0,.3), 0 16px 40px rgba(0,0,0,.35);
@@ -66,7 +66,7 @@ input,select,textarea{font-family:inherit}
 .sidebar::-webkit-scrollbar{width:4px}
 .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:4px}
 .brand{display:flex;align-items:center;gap:10px;padding:0 8px}
-.brand-mark{width:30px;height:30px;flex-shrink:0;color:#fff}
+.brand-mark{height:28px;width:auto;flex-shrink:0}
 .brand-name{font-size:19px;font-weight:800;letter-spacing:.5px;color:#fff}
 .brand-sub{font-size:10.5px;color:rgba(255,255,255,.42);letter-spacing:.3px;margin-top:1px}
 
@@ -83,11 +83,11 @@ input,select,textarea{font-family:inherit}
 
 .bot-btn{
   margin:4px 2px 0;padding:11px 13px;border-radius:14px;width:calc(100% - 4px);
-  background:linear-gradient(135deg,#7b6ef0,#a89bff);color:#fff;font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,#567ACE,#7ea3e8);color:#fff;font-size:13px;font-weight:700;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  box-shadow:0 8px 20px rgba(123,110,240,.32);transition:transform .18s var(--ease),box-shadow .18s var(--ease);
+  box-shadow:0 8px 20px rgba(86,122,206,.32);transition:transform .18s var(--ease),box-shadow .18s var(--ease);
 }
-.bot-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(123,110,240,.4)}
+.bot-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(86,122,206,.4)}
 .bot-btn svg{width:15px;height:15px}
 .bot-hint{font-size:10.5px;color:rgba(255,255,255,.38);text-align:center;margin-top:7px;letter-spacing:.02em}
 
@@ -141,7 +141,7 @@ input,select,textarea{font-family:inherit}
 /* ============ Hero ============ */
 .hero{
   position:relative;overflow:hidden;border-radius:var(--radius-l);padding:34px 36px;
-  background:linear-gradient(105deg,#eceaff 0%,#f3f0ff 38%,#eafaf5 100%);
+  background:linear-gradient(105deg,#e8eefb 0%,#eef3fd 38%,#eafaf5 100%);
   box-shadow:var(--shadow-s);margin-bottom:22px;
 }
 [data-theme="dark"] .hero{background:linear-gradient(105deg,#26233b 0%,#1f2330 55%,#1b2b2a 100%)}
@@ -151,7 +151,7 @@ input,select,textarea{font-family:inherit}
   filter:blur(4px);
 }
 .hero-inner{position:relative;z-index:1;max-width:560px}
-.hero:before{content:"";position:absolute;left:22%;bottom:-90px;width:300px;height:220px;background:radial-gradient(circle,rgba(123,110,240,.16),transparent 68%);filter:blur(10px)}
+.hero:before{content:"";position:absolute;left:22%;bottom:-90px;width:300px;height:220px;background:radial-gradient(circle,rgba(86,122,206,.16),transparent 68%);filter:blur(10px)}
 .eyebrow{font-size:11px;letter-spacing:.22em;font-weight:700;color:var(--accent);opacity:.9}
 .hero h1{font-size:31px;line-height:1.32;font-weight:800;margin:12px 0 10px;letter-spacing:-.01em}
 .hero p{font-size:13.5px;color:var(--text-2);line-height:1.75}
@@ -296,7 +296,7 @@ input,select,textarea{font-family:inherit}
   transition:transform .16s var(--ease),filter .16s var(--ease),background .16s var(--ease);
 }
 .btn:active{transform:scale(.98)}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(123,110,240,.28)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(86,122,206,.28)}
 .btn-primary:hover{filter:brightness(1.06)}
 .btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
@@ -455,7 +455,7 @@ input,select,textarea{font-family:inherit}
 .pin:hover{transform:translate(-50%,-100%) scale(1.08);z-index:5}
 .pin .dot{
   width:26px;height:26px;border-radius:50% 50% 50% 4px;transform:rotate(45deg);
-  background:var(--accent);box-shadow:0 6px 14px rgba(123,110,240,.45);
+  background:var(--accent);box-shadow:0 6px 14px rgba(86,122,206,.45);
   display:flex;align-items:center;justify-content:center;
 }
 .pin .dot>span{transform:rotate(-45deg);font-size:10.5px;font-weight:800;color:#fff;letter-spacing:-.02em}
@@ -680,7 +680,7 @@ input,select,textarea{font-family:inherit}
 .cr-head small{display:block;font-size:11px;font-weight:500;color:var(--text-3);margin-top:3px}
 .cr-avatar{
   width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#7b6ef0,#a89bff);
+  font-size:14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#567ACE,#7ea3e8);
 }
 .cr-score{display:flex;align-items:center;gap:16px;background:var(--surface-soft);border-radius:14px;padding:16px;margin-bottom:14px}
 .cr-num{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--text);line-height:1}
@@ -708,7 +708,7 @@ input,select,textarea{font-family:inherit}
 
 /* ============ Profile ============ */
 .profile-hero{display:flex;align-items:center;gap:16px;margin-bottom:6px}
-.profile-hero .avatar{width:62px;height:62px;font-size:20px;background:linear-gradient(135deg,#7b6ef0,#a89bff)}
+.profile-hero .avatar{width:62px;height:62px;font-size:20px;background:linear-gradient(135deg,#567ACE,#7ea3e8)}
 .profile-hero h2{font-size:19px;font-weight:800}
 .profile-hero p{font-size:12.5px;color:var(--text-3);margin-top:4px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--border)}
@@ -783,7 +783,7 @@ input,select,textarea{font-family:inherit}
 .dm-pin{
   position:absolute;left:50%;top:52%;transform:translate(-50%,-100%);
   width:30px;height:30px;border-radius:50% 50% 50% 4px;rotate:45deg;
-  background:var(--accent);box-shadow:0 8px 18px rgba(123,110,240,.45);
+  background:var(--accent);box-shadow:0 8px 18px rgba(86,122,206,.45);
   display:flex;align-items:center;justify-content:center;z-index:2;
 }
 .dm-pin>span{rotate:-45deg;font-size:11px;font-weight:800;color:#fff}
@@ -836,7 +836,7 @@ input,select,textarea{font-family:inherit}
 .terminal div.ok{color:#a8b4ff}
 @keyframes lineIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
 .progress{height:4px;border-radius:2px;background:var(--surface-soft);margin-top:14px;overflow:hidden}
-.progress>i{display:block;height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,#7b6ef0,#5fd0b4);transition:width .3s linear}
+.progress>i{display:block;height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,#567ACE,#5fd0b4);transition:width .3s linear}
 
 /* toast */
 #toastBox{position:fixed;right:22px;bottom:22px;z-index:400;display:flex;flex-direction:column;gap:9px}
@@ -889,6 +889,14 @@ input,select,textarea{font-family:inherit}
   #toastBox{right:12px;left:12px;bottom:72px}
 }
 </style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#567ACE">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CHASING">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 </head>
 <body>
 <div class="app">
@@ -896,9 +904,8 @@ input,select,textarea{font-family:inherit}
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 24 24" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/></svg>
+      <img class="brand-mark" src="logo.png" alt="CHASING" style="width:auto;height:28px">
       <div>
-        <div class="brand-name">CHASING</div>
         <div class="brand-sub">把喜欢，带到现场</div>
       </div>
     </div>
@@ -991,7 +998,7 @@ input,select,textarea{font-family:inherit}
             <p>从官宣到入场，只收录能核对的公开来源。</p>
           </div>
           <svg class="hero-orb" viewBox="0 0 200 200" fill="none">
-            <ellipse cx="100" cy="100" rx="88" ry="30" stroke="rgba(123,110,240,.28)" stroke-width="1.4" transform="rotate(-18 100 100)"/>
+            <ellipse cx="100" cy="100" rx="88" ry="30" stroke="rgba(86,122,206,.28)" stroke-width="1.4" transform="rotate(-18 100 100)"/>
             <ellipse cx="100" cy="100" rx="88" ry="30" stroke="rgba(95,208,180,.28)" stroke-width="1.4" transform="rotate(48 100 100)"/>
             <circle cx="100" cy="100" r="46" fill="url(#orb)"/>
             <defs><radialGradient id="orb" cx="35%" cy="30%"><stop offset="0" stop-color="#c9c0ff"/><stop offset="60%" stop-color="#a79cf5"/><stop offset="1" stop-color="#8a7cf0"/></radialGradient></defs>
@@ -1472,7 +1479,7 @@ input,select,textarea{font-family:inherit}
 /* =====================================================================
    核心数据：ChasingDatabase
    ===================================================================== */
-const PALETTE = ['#7b6ef0','#5fd0b4','#f0a93b','#ef7c8e','#56a8f5','#a97cf0','#48c9a9','#f58f6a'];
+const PALETTE = ['#567ACE','#5fd0b4','#f0a93b','#ef7c8e','#56a8f5','#a97cf0','#48c9a9','#f58f6a'];
 
 function buildTicketUrl(name){ return 'https://www.globalinterpark.com/search?q=' + encodeURIComponent(name); }
 function buildVoteUrl(name){ return 'https://www.mubeat.tv/'; }
@@ -1480,7 +1487,7 @@ function buildVoteUrl(name){ return 'https://www.mubeat.tv/'; }
 /* 活动范围：韩国 / 亚洲 / 全球 */
 window.ChasingDatabase = {
   stars: [
-    { id:'s1',  name:'IVE',        initials:'IV',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'Starship 娱乐 · Fanclub 数据源',  fanclub:'DIVE',       ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
+    { id:'s1',  name:'IVE',        initials:'IV',  color:'#567ACE', category:'Kpop', region:'韩国', bio:'Starship 娱乐 · Fanclub 数据源',  fanclub:'DIVE',       ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
     { id:'s2',  name:'aespa',      initials:'AE',  color:'#5fd0b4', category:'Kpop', region:'韩国', bio:'SM 娱乐 · Weverse 公告监控',      fanclub:'MY',         ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.idolchamp.co.kr/' },
     { id:'s3',  name:'BLACKPINK',  initials:'BP',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'YG 娱乐 · 巡演数据源',             fanclub:'BLINK',      ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
     { id:'s4',  name:'TWICE',      initials:'TW',  color:'#f0a93b', category:'Kpop', region:'韩国', bio:'JYP 娱乐 · Fanclub 公告',         fanclub:'ONCE',       ticket_url:'https://www.globalinterpark.com/',  vote_url:'https://www.mubeat.tv/' },
@@ -1603,7 +1610,7 @@ window.ChasingDatabase = {
 };
 
 const SCRAPE_POOL = [
-  { name:'ENHYPEN',              initials:'EH',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'BELIFT LAB · Weverse 公告', fanclub:'ENGENE' },
+  { name:'ENHYPEN',              initials:'EH',  color:'#567ACE', category:'Kpop', region:'韩国', bio:'BELIFT LAB · Weverse 公告', fanclub:'ENGENE' },
   { name:'TOMORROW X TOGETHER',  initials:'TXT', color:'#5fd0b4', category:'Kpop', region:'韩国', bio:'HYBE · 巡演数据源',        fanclub:'MOA' },
   { name:'ATEEZ',                initials:'AT',  color:'#f0a93b', category:'Kpop', region:'韩国', bio:'KQ 娱乐 · Fanclub',        fanclub:'ATINY' },
   { name:'NMIXX',                initials:'NX',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'JYP 娱乐 · 公告',           fanclub:'NSWER' },
@@ -1612,7 +1619,7 @@ const SCRAPE_POOL = [
   { name:'BABYMONSTER',          initials:'BM',  color:'#48c9a9', category:'Kpop', region:'韩国', bio:'YG 娱乐 · 公告',            fanclub:'MONSTIEZ' },
   { name:'RIIZE',                initials:'RZ',  color:'#f58f6a', category:'Kpop', region:'韩国', bio:'SM 娱乐 · 数据源',          fanclub:'BRIIZE' },
   { name:'Kep1er',               initials:'KP',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'WAKEONE · Fanclub',        fanclub:'Kep1ian' },
-  { name:'ZEROBASEONE',          initials:'ZB',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'WAKEONE · 公告',            fanclub:'ZEROSE' },
+  { name:'ZEROBASEONE',          initials:'ZB',  color:'#567ACE', category:'Kpop', region:'韩国', bio:'WAKEONE · 公告',            fanclub:'ZEROSE' },
   { name:'TREASURE',             initials:'TR',  color:'#ef7c8e', category:'Kpop', region:'韩国', bio:'YG 娱乐 · 巡演',            fanclub:'TREASURE MAKER' },
   { name:'Girls Generation',     initials:'SNSD',color:'#a97cf0', category:'Kpop', region:'韩国', bio:'SM 娱乐 · Fanclub',        fanclub:'S♡NE' },
   { name:'Red Velvet',           initials:'RV',  color:'#f58f6a', category:'Kpop', region:'韩国', bio:'SM 娱乐 · 公告',            fanclub:'ReVeluv' },
@@ -1620,7 +1627,7 @@ const SCRAPE_POOL = [
   { name:'ILLIT',                initials:'IL',  color:'#5fd0b4', category:'Kpop', region:'韩国', bio:'BELIFT LAB · 公告',         fanclub:'GLLIT' },
   { name:'P1Harmony',            initials:'PH',  color:'#f0a93b', category:'Kpop', region:'韩国', bio:'FNC 娱乐 · Fanclub',       fanclub:'P1ece' },
   { name:'THE BOYZ',             initials:'TB',  color:'#56a8f5', category:'Kpop', region:'韩国', bio:'ONE HUNDRED · 公告',        fanclub:'THE B' },
-  { name:'CRAVITY',              initials:'CV',  color:'#7b6ef0', category:'Kpop', region:'韩国', bio:'Starship 娱乐 · 公告',      fanclub:'LUVITY' }
+  { name:'CRAVITY',              initials:'CV',  color:'#567ACE', category:'Kpop', region:'韩国', bio:'Starship 娱乐 · 公告',      fanclub:'LUVITY' }
 ];
 
 const VENUES = [
@@ -1829,7 +1836,7 @@ function renderEvents(){
     return;
   }
   wrap.innerHTML = list.map(ev => {
-    const star = ChasingDatabase.stars.find(s => s.name === ev.star) || { color:'#7b6ef0', initials:'CH', bio:'' };
+    const star = ChasingDatabase.stars.find(s => s.name === ev.star) || { color:'#567ACE', initials:'CH', bio:'' };
     const md = monthDay(ev.date);
     const tags = (ev.tags||[]).map((t,i)=>`<span class="tag ${i===1?'green':'purple'}">${t}</span>`).join('');
     return `<article class="ev">
@@ -1882,7 +1889,7 @@ function livePostsForEvent(ev){
 function openDetail(id){
   const ev = ChasingDatabase.events.find(e => e.id === id);
   if(!ev){ toast('找不到该行程'); return; }
-  const star = ChasingDatabase.stars.find(s => s.name === ev.star) || { color:'#7b6ef0', initials:'CH', bio:'数据来源核对中', fanclub:'粉丝团' };
+  const star = ChasingDatabase.stars.find(s => s.name === ev.star) || { color:'#567ACE', initials:'CH', bio:'数据来源核对中', fanclub:'粉丝团' };
   document.getElementById('detailTitle').textContent = '行程详情';
 
   const chk = (ev.guide?.checklist||[]).map(x=>`<li>${x}</li>`).join('');
@@ -1916,7 +1923,7 @@ function openDetail(id){
       <div class="ev-rel">
         <div class="ev-rel-head"><b>这场有 ${liveFreebies.length} 个无料 / 周边活动</b><span>由粉丝发布，现场领取</span></div>
         ${liveFreebies.slice(0,3).map(x=>`<div class="ev-rel-item" onclick="closeModal('detailModal'); switchPage('ugc'); switchUgcTab('${x.kind}')">
-          <span class="ev-rel-dot" style="background:${x.kind==='free'?'#2fbf9b':'#7b6ef0'}"></span>
+          <span class="ev-rel-dot" style="background:${x.kind==='free'?'#2fbf9b':'#567ACE'}"></span>
           <div><b>${x.title}</b><span>${x.kind==='free' ? freeTypeLabel(x.type) + ' · ' + (x.where||'地点待定') : (x.deal==='sell'?'转出':'收买') + ' · NT$ ' + x.price}</span></div>
           <span class="ev-rel-go">查看 →</span>
         </div>`).join('')}
@@ -1967,7 +1974,7 @@ function renderCalendar(){
     : `<div class="empty">本月暂无行程</div>`;
 }
 function miniCard(ev){
-  const star = ChasingDatabase.stars.find(s=>s.name===ev.star) || { color:'#7b6ef0', initials:'CH' };
+  const star = ChasingDatabase.stars.find(s=>s.name===ev.star) || { color:'#567ACE', initials:'CH' };
   return `<div class="cal-mini" onclick="openDetail('${ev.id}')">
     <span class="avatar" style="background:${star.color}">${star.initials}</span>
     <div style="min-width:0">
@@ -1988,7 +1995,7 @@ function showDayEvents(day){
 /* ---------- 投票 ---------- */
 function renderVotes(){
   document.getElementById('voteGrid').innerHTML = ChasingDatabase.votes.map(v => {
-    const star = ChasingDatabase.stars.find(s=>s.name===v.star) || { color:'#7b6ef0', initials:'CH' };
+    const star = ChasingDatabase.stars.find(s=>s.name===v.star) || { color:'#567ACE', initials:'CH' };
     return `<div class="vote-card">
       <div class="vote-head">
         <span class="avatar" style="background:${star.color};width:34px;height:34px;font-size:12px">${star.initials}</span>
@@ -2013,7 +2020,7 @@ function renderFanclubs(){
   const list = ChasingDatabase.fanclubs || [];
   document.getElementById('fanclubCount').textContent = list.length;
   box.innerHTML = list.length ? list.map(f => {
-    const star = ChasingDatabase.stars.find(s=>s.name===f.star) || { color:'#7b6ef0', initials:'CH' };
+    const star = ChasingDatabase.stars.find(s=>s.name===f.star) || { color:'#567ACE', initials:'CH' };
     const joined = state.joinedFanclubs.includes(f.id);
     return `<div class="fc-card">
       <div class="fc-top">
@@ -2046,7 +2053,7 @@ function toggleJoinFanclub(id){
 function openFanclubChannel(id){
   const f = (ChasingDatabase.fanclubs||[]).find(x=>x.id===id);
   if(!f){ toast('频道数据缺失'); return; }
-  const star = ChasingDatabase.stars.find(s=>s.name===f.star) || { color:'#7b6ef0', initials:'CH' };
+  const star = ChasingDatabase.stars.find(s=>s.name===f.star) || { color:'#567ACE', initials:'CH' };
   const free = (ChasingDatabase.freebies||[]).filter(x=>x.star===f.star);
   const goods = (ChasingDatabase.goods||[]).filter(x=>x.star===f.star);
   const info = ChasingDatabase.ugc.filter(x=>x.approved && x.star===f.star);
@@ -2092,10 +2099,12 @@ function renderFreebies(){
 
   let list = (ChasingDatabase.freebies||[]).slice();
   if(state.freeFilter) list = list.filter(x=>x.type===state.freeFilter);
+  const qFree = ((document.getElementById('hubSearchInput')||{}).value||'').trim().toLowerCase();
+  if(qFree) list = list.filter(x => (x.title+x.star+(x.where||'')+(x.item||'')).toLowerCase().includes(qFree));
   document.getElementById('freeCount').textContent =(ChasingDatabase.freebies||[]).length;
 
   box.innerHTML = list.length ? list.map(x=>{
-    const star = ChasingDatabase.stars.find(s=>s.name===x.star) || { color:'#7b6ef0', initials:'CH' };
+    const star = ChasingDatabase.stars.find(s=>s.name===x.star) || { color:'#567ACE', initials:'CH' };
     return `<div class="mk-card">
       <div class="mk-top">
         <span class="avatar" style="background:${star.color};width:30px;height:30px;font-size:11px">${star.initials}</span>
@@ -2242,10 +2251,24 @@ function renderGoods(){
 
   let list = (ChasingDatabase.goods||[]).slice();
   if(state.goodsFilter) list = list.filter(x=>x.deal===state.goodsFilter);
+  const qGoods = ((document.getElementById('hubSearchInput')||{}).value||'').trim().toLowerCase();
+  if(qGoods) list = list.filter(x => (x.title+x.star+(x.where||'')+(x.cond||'')).toLowerCase().includes(qGoods));
+  const pf = (document.getElementById('goodsPriceFilter')||{}).value || 'all';
+  if(pf !== 'all'){
+    list = list.filter(x => {
+      const num = parseInt(String(x.price||'0').replace(/[^0-9]/g,''), 10) || 0;
+      if(pf === 'low') return num > 0 && num < 500;
+      if(pf === 'mid') return num >= 500 && num <= 1500;
+      if(pf === 'high') return num > 1500;
+      return true;
+    });
+  }
+  const cf = (document.getElementById('goodsCityFilter')||{}).value || 'all';
+  if(cf !== 'all') list = list.filter(x => (x.where||'').includes(cf));
   document.getElementById('goodsCount').textContent = (ChasingDatabase.goods||[]).length;
 
   box.innerHTML = list.length ? list.map(x=>{
-    const star = ChasingDatabase.stars.find(s=>s.name===x.star) || { color:'#7b6ef0', initials:'CH' };
+    const star = ChasingDatabase.stars.find(s=>s.name===x.star) || { color:'#567ACE', initials:'CH' };
     return `<div class="gd-item">
       <span class="gd-thumb" style="background:${star.color}1f;color:${star.color}">${goodsLabel(x)}</span>
       <div class="gd-main">
@@ -2291,7 +2314,7 @@ function renderUGC(){
   document.getElementById('ugcCount').textContent = approved.length;
   const list = document.getElementById('ugcList');
   list.innerHTML = approved.length ? approved.map(u => {
-    const star = ChasingDatabase.stars.find(s=>s.name===u.star) || { color:'#7b6ef0', initials:'CH' };
+    const star = ChasingDatabase.stars.find(s=>s.name===u.star) || { color:'#567ACE', initials:'CH' };
     const isNew = u.id === freshUgcId;
     return `<div class="ugc-item ${isNew?'fresh':''}" data-id="${u.id}" onclick="focusUgc('${u.id}')">
       <span class="avatar" style="background:${star.color}">${star.initials}</span>
@@ -2764,8 +2787,14 @@ function saveDatabase(){
     }));
   }catch(_){}
 }
+const DB_VERSION = '2026-07-02-ive-v1';
 function loadDatabase(){
   try{
+    if(localStorage.getItem('chasing-db-ver') !== DB_VERSION){
+      localStorage.removeItem(DB_KEY);
+      localStorage.setItem('chasing-db-ver', DB_VERSION);
+      return false;
+    }
     const raw = localStorage.getItem(DB_KEY);
     if(!raw) return false;
     const data = JSON.parse(raw);
@@ -2784,6 +2813,37 @@ function loadDatabase(){
     state.scrapeCount = data.scrapeCount || 0;
     return true;
   }catch(_){ return false; }
+}
+
+/* ---------- 共享行程数据（每小时由 GitHub Actions 自动更新） ---------- */
+// 网站启动后，先按原来那样读本地数据渲染一次，再去读仓库里的共享文件
+// data/events.json。读到就用共享行程替换本地行程（共享为准），同时写回本地；
+// 读不到（没联网、文件不存在、格式不对）就保持本地数据不变，页面不受影响。
+const SHARED_EVENTS_URL = 'data/events.json';
+function loadSharedEvents(){
+  return fetch(SHARED_EVENTS_URL, { cache: 'no-store' })
+    .then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(data){
+      if(!data || !Array.isArray(data.events) || !data.events.length) return false;
+      // 只接受字段齐全的事件，缺 id / date / title 的丢弃，不让坏数据进页面。
+      var clean = data.events.filter(function(ev){
+        return ev && typeof ev.id === 'string' && ev.id &&
+               typeof ev.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ev.date) &&
+               typeof ev.title === 'string' && ev.title;
+      });
+      if(!clean.length) return false;
+      ChasingDatabase.events = clean;
+      saveDatabase();
+      renderEvents();
+      renderCalendar();
+      var c = document.getElementById('asideSyncCount'); if(c) c.textContent = clean.length;
+      var t = document.getElementById('asideLastSync');
+      if(t) t.textContent = '共享数据' + (data.updatedAt ? ' · ' + String(data.updatedAt).slice(0, 10) : '');
+      var s = document.getElementById('asideSyncTime');
+      if(s && data.updatedAt) s.textContent = String(data.updatedAt).slice(0, 10);
+      return true;
+    })
+    .catch(function(){ return false; });
 }
 
 /* 根据场馆名猜一个地图坐标（无匹配就随机落点） */
@@ -2964,6 +3024,9 @@ function init(){
   switchUgcTab(state.ugcTab || 'info');
   renderThreads();
 
+  // 共享行程：每小时由 GitHub Actions 更新，读到就替换本地行程，读不到保持本地数据。
+  loadSharedEvents();
+
   document.getElementById('asideSyncCount').textContent = ChasingDatabase.events.length;
   document.getElementById('asideLastSync').textContent = '—';
 
@@ -2982,5 +3045,8 @@ function init(){
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a60ae017cea023de',t:'MTc5NTcxNjg5Mw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a60ae017cea023de',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>
+if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+</script>
+</body>
 </html>

@@ -1,0 +1,51 @@
+# CHASING 共享行程自动更新
+# 每小时跑一次：抓 YouTube 官方频道 + 新闻 RSS，与人工文件合并后更新 data/events.json。
+# 只有文件真的变了才提交推送；GitHub Pages 随后重新部署（约 1 分钟），
+# 测试者打开网站就看到同一份新数据，不用再走控制台导入。
+# 注意：这是“每小时自动更新”，不是秒级实时。见 SETUP.md。
+
+name: 更新共享行程
+
+on:
+  schedule:
+    - cron: '0 * * * *' # 每小时整点
+  workflow_dispatch: # 也可以在 Actions 页面手动点一下立即跑
+
+permissions:
+  contents: write
+
+jobs:
+  update-events:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 抓取并更新行程
+        env:
+          # 可选：不填也能跑，对应来源会被跳过（只用人工文件 + 能跑的免费来源）。
+          # 填法见 SETUP.md：仓库 Settings → Secrets and variables → Actions。
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          # 可选，不填用默认值：Apify Actor apify/instagram-profile-scraper；IG 每 2 小时查一次。
+          APIFY_ACTOR_ID: ${{ secrets.APIFY_ACTOR_ID }}
+          IG_CHECK_INTERVAL_HOURS: ${{ vars.IG_CHECK_INTERVAL_HOURS }}
+        run: node scripts/fetch-events.mjs
+
+      - name: 有变化才提交
+        run: |
+          git config user.name "chasing-bot"
+          git config user.email "chasing-bot@users.noreply.github.com"
+          git add data/events.json data/state.json
+          if git diff --cached --quiet; then
+            echo "行程无变化，不提交。"
+          else
+            git commit -m "chore: 更新共享行程 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
